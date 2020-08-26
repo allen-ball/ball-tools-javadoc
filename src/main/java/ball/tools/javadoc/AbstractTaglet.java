@@ -82,7 +82,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Abstract {@link jdk.javadoc.doclet.Taglet} base class.
- * See {@link #toNode(DocTree,Element)}.
+ * See {@link #toNode(List,Element)}.
  *
  * <p>Note: {@link #getName()} implementation requires the subclass is
  * annotated with {@link TagletName}.</p>
@@ -450,7 +450,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             String text =
                 node.getContent()
                 .stream()
-                .map(t -> node.accept(this, null))
+                .map(t -> node.accept(this, p))
                 .findFirst().orElse(EMPTY);
 
             return text;
@@ -461,7 +461,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             String text =
                 node.getContent()
                 .stream()
-                .map(t -> node.accept(this, null))
+                .map(t -> node.accept(this, p))
                 .findFirst().orElse(EMPTY);
 
             return text;

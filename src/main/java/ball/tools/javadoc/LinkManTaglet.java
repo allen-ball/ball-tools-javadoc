@@ -39,7 +39,6 @@ import lombok.ToString;
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("link.man")
 @PatternRegex("(?is)(?<name>.+)[(](?<section>[\\p{Alnum}]+)[)]")
 @NoArgsConstructor @ToString

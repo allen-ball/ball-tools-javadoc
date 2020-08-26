@@ -20,7 +20,6 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.lang.annotation.Annotation;
@@ -32,20 +31,18 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
- * Inline {@link Taglet} to provide a report of members whose values are
- * injected.
+ * Inline {@link jdk.javadoc.doclet.Taglet} to provide a report of members
+ * whose values are injected.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("injected.fields")
 @NoArgsConstructor @ToString
 public class InjectedFieldsTaglet extends AbstractInlineTaglet {

@@ -20,21 +20,20 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.beans.PropertyDescriptorsTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.util.Map;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
- * Inline {@link Taglet} to provide a table of bean properties.
+ * Inline {@link jdk.javadoc.doclet.Taglet} to provide a table of bean
+ * properties.
  *
  * For example:
  *
@@ -43,7 +42,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("bean.info")
 @NoArgsConstructor @ToString
 public class BeanInfoTaglet extends AbstractInlineTaglet {

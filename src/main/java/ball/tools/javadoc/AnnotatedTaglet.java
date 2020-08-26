@@ -27,7 +27,7 @@ import jdk.javadoc.doclet.Taglet;
 
 /**
  * Interface indicating {@link Taglet} is annotated with {@link TagletName},
- * {@link TagletLocations}, and related annotations.
+ * {@link AllowedLocations}, and related annotations.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$

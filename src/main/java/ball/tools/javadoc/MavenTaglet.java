@@ -20,7 +20,6 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.util.PropertiesImpl;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
@@ -131,12 +130,12 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     }
 
     /**
-     * Inline {@link Taglet} to provide a report of fields whose values are
-     * configured by the {@link.uri https://maven.apache.org/index.html Maven}
+     * Inline {@link jdk.javadoc.doclet.Taglet} to provide a report of
+     * fields whose values are configured by the
+     * {@link.uri https://maven.apache.org/index.html Maven}
      * {@link.uri https://maven.apache.org/plugin-developers/index.html Plugin}
      * {@code plugin.xml}.
      */
-    @ServiceProviderFor({ Taglet.class })
     @TagletName("maven.plugin.fields")
     @NoArgsConstructor @ToString
     public static class PluginFields extends MavenTaglet {
@@ -249,12 +248,11 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     }
 
     /**
-     * Inline {@link Taglet} to include generated
+     * Inline {@jdk.javadoc.doclet.link Taglet} to include generated
      * {@link.uri https://maven.apache.org/index.html Maven}
      * {@link.uri https://maven.apache.org/plugin-developers/index.html Plugin}
      * help documentation.
      */
-    @ServiceProviderFor({ Taglet.class })
     @TagletName("maven.plugin.help")
     @NoArgsConstructor @ToString
     public static class PluginHelp extends MavenTaglet {
@@ -358,7 +356,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     }
 
     /**
-     * {@link Taglet} to provide
+     * {@link jdk.javadoc.doclet.Taglet} to provide
      * {@link.uri https://maven.apache.org/pom.html POM} POM coordinates as
      * a {@code <dependency/>} element to include this documented
      * {@link Class} or {@link Package}.
@@ -367,7 +365,6 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      *
      * {@pom.coordinates}
      */
-    @ServiceProviderFor({ Taglet.class })
     @TagletName("pom.coordinates")
     @NoArgsConstructor @ToString
     public static class Coordinates extends MavenTaglet {

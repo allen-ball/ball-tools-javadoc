@@ -20,23 +20,21 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.net.URI;
 import java.util.Map;
 import javax.lang.model.element.Element;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * Inline {@link Taglet} providing links to external RFCs.
+ * Inline {@link jdk.javadoc.doclet.Taglet} providing links to external
+ * RFCs.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("link.rfc")
 @NoArgsConstructor @ToString
 public class LinkRFCTaglet extends AbstractInlineTaglet {

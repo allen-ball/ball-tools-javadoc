@@ -20,24 +20,21 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.util.Map;
 import javax.lang.model.element.Element;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
- * Inline {@link Taglet} to provide {@link.this} links.
+ * Inline {@link jdk.javadoc.doclet.Taglet} to provide {@link.this} links.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("link.this")
 @NoArgsConstructor @ToString
 public class LinkThisTaglet extends AbstractInlineTaglet {

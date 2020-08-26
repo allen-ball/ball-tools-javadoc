@@ -20,7 +20,6 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.swing.table.ListTableModel;
 import ball.swing.table.MapTableModel;
 import ball.xml.FluentNode;
@@ -31,7 +30,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.io.IOUtils;
@@ -39,13 +37,13 @@ import org.apache.commons.io.IOUtils;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
- * Inline {@link Taglet} to include a static {@link Class}
- * {@link java.lang.reflect.Field} or resource in the Javadoc output.
+ * Inline {@link jdk.javadoc.doclet.Taglet} to include a static
+ * {@link Class} {@link java.lang.reflect.Field} or resource in the Javadoc
+ * output.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("include")
 @NoArgsConstructor @ToString
 public class IncludeTaglet extends AbstractInlineTaglet {

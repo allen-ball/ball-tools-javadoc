@@ -94,7 +94,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     public FluentNode a(DocTree tag, Class<?> type, Node node);
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.ClassDoc member}{@code ">}{@link Node node}{@code </a>}
+     * {@code <a href="}{@link Member}{@code ">}{@link Node node}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   member          The target {@link Member}.
@@ -118,7 +118,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     public FluentNode a(DocTree tag, String name, Node node);
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.TypeElement type}{@code ">}{@link TypeElement#name() TypeElement.name()}{@code </a>}
+     * {@code <a href="}{@link TypeElement type}{@code ">}{@code name}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   type            The target {@link Class}.
@@ -130,7 +130,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     }
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.ClassDoc type}{@code ">}{@link #code(String) code(name)}{@code </a>}
+     * {@code <a href="}{@link Class}{@code ">}{@link #code(String) code(name)}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   type            The target {@link Class}.
@@ -143,7 +143,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     }
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.MemberDoc member}{@code ">}{@link com.sun.javadoc.MemberDoc#name() MemberDoc.name()}{@code </a>}
+     * {@code <a href="}{@link Member}{@code ">}{@link Member#getName()}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   member          The target {@link Member}.
@@ -155,7 +155,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     }
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.MemberDoc member}{@code ">}{@link #code(String) code(name)}{@code </a>}
+     * {@code <a href="}{@link Member}{@code ">}{@link #code(String) code(name)}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   member          The target {@link Member}.
@@ -168,7 +168,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     }
 
     /**
-     * {@code <a href="}{@link com.sun.javadoc.ClassDoc constant}{@code ">}{@link Enum#name() constant.name()}{@code </a>}
+     * {@code <a href="}{@link Enum}{@code ">}{@link Enum#name() constant.name()}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   constant        The target {@link Enum}.
@@ -277,7 +277,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * }
      */
     /**
-     * {@code <a href="}{@link com.sun.javadoc.ClassDoc annotation}{@code ">}{@link #code(String) code(String.valueOf(annotation))}{@code </a>}
+     * {@code <a href="}{@link Annotation}{@code ">}{@link #code(String) code(String.valueOf(annotation))}{@code </a>}
      *
      * @param   tag             The {@link DocTree}.
      * @param   annotation      The target {@link Annotation}.

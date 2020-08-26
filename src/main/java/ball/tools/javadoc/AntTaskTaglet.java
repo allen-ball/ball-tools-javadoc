@@ -20,7 +20,6 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.ServiceProviderFor;
 import ball.util.ant.taskdefs.AntTask;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.DocTree;
@@ -34,7 +33,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.tools.ant.ComponentHelper;
@@ -49,13 +47,12 @@ import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
 
 /**
- * Inline {@link Taglet} to document {@link.uri http://ant.apache.org/ Ant}
- * {@link Task}s.
+ * Inline {@link jdk.javadoc.doclet.Taglet} to document
+ * {@link.uri http://ant.apache.org/ Ant} {@link Task}s.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
  */
-@ServiceProviderFor({ Taglet.class })
 @TagletName("ant.task")
 @NoArgsConstructor @ToString
 public class AntTaskTaglet extends AbstractInlineTaglet {

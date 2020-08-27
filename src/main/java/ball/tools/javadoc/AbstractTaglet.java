@@ -28,37 +28,26 @@ import ball.xml.XalanConstants;
 import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.TextTree;
-import com.sun.source.doctree.UnknownBlockTagTree;
 import com.sun.source.doctree.UnknownInlineTagTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.util.DocTreePath;
 import com.sun.source.util.DocTrees;
 import com.sun.source.util.SimpleDocTreeVisitor;
-import com.sun.source.util.TreePath;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-import javax.tools.JavaFileManager;
+import javax.tools.Diagnostic;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -70,6 +59,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.w3c.dom.Node;
 
+import static java.util.stream.Collectors.joining;
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.xml.transform.OutputKeys.INDENT;
@@ -77,7 +67,6 @@ import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
 import static lombok.AccessLevel.PROTECTED;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
-import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -116,6 +105,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     private Doclet doclet = null;
     /** See {@link DocletEnvironment#getDocTrees()}. */
     protected DocTrees trees = null;
+    private transient ClassLoader loader = null;
     private transient Method href = null;
 
     {
@@ -258,9 +248,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      */
     protected FluentNode warning(DocTree tag, Element element,
                                  Throwable throwable) {
-        DocCommentTree comment = trees.getDocCommentTree(element);
-
-        trees.printMessage(WARNING, throwable.toString(), tag, comment, null);
+        print(WARNING, tag, "%s", throwable.toString());
 
         String string = "@" + getName();
 
@@ -274,6 +262,26 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
         return fragment(p(b(u(string))),
                         comment(ExceptionUtils.getStackTrace(throwable)));
+    }
+
+    /**
+     * Method to print a diagnostic message.
+     *
+     * @param   kind            The {@link javax.tools.Diagnostic.Kind}.
+     * @param   tag             The offending {@link DocTree}.
+     * @param   format          The message format {@link String}.
+     * @param   argv            Optional arguments to the message format
+     *                          {@link String}.
+     *
+     * @see DocTrees#printMessage(Diagnostic.Kind,CharSequence,DocTree,DocCommentTree,CompilationUnitTree)
+     */
+    protected void print(Diagnostic.Kind kind, DocTree tag,
+                         String format, Object... argv) {
+        DocCommentTree comment = null;
+        CompilationUnitTree unit = null;
+
+        trees.printMessage(kind, String.format(format, argv),
+                           tag, comment, unit);
     }
 
     /**
@@ -344,6 +352,15 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     @Override
+    protected ClassLoader getClassLoader() {
+        if (loader == null) {
+            loader = getClassPathClassLoader(fm, getClass().getClassLoader());
+        }
+
+        return loader;
+    }
+
+    @Override
     public URI href(DocTree tag, Object target) {
         URI uri = null;
 
@@ -362,10 +379,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                     uri = (URI) method.invoke(this, tag, target);
                 }
             } catch (Exception exception) {
-                trees.printMessage(WARNING,
-                                   "No method to get href for "
-                                   + target.getClass().getName(),
-                                   tag, null, null);
+                print(WARNING, tag, null,
+                      "No method to get href for %s",
+                      target.getClass().getName());
             }
         }
 
@@ -446,25 +462,15 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     @NoArgsConstructor @ToString
     private class GetTextVisitor extends SimpleDocTreeVisitor<String,Void> {
         @Override
-        public String visitUnknownBlockTag(UnknownBlockTagTree node, Void p) {
-            String text =
-                node.getContent()
-                .stream()
-                .map(t -> node.accept(this, p))
-                .findFirst().orElse(EMPTY);
-
-            return text;
-        }
-
-        @Override
         public String visitUnknownInlineTag(UnknownInlineTagTree node, Void p) {
             String text =
                 node.getContent()
                 .stream()
-                .map(t -> node.accept(this, p))
-                .findFirst().orElse(EMPTY);
+                .map(t -> t.accept(this, p))
+                .filter(Objects::nonNull)
+                .collect(joining(SPACE, EMPTY, EMPTY));
 
-            return text;
+            return text.trim();
         }
 
         @Override

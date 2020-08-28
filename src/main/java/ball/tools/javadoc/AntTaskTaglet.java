@@ -22,7 +22,6 @@ package ball.tools.javadoc;
  */
 import ball.util.ant.taskdefs.AntTask;
 import ball.xml.FluentNode;
-import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
@@ -70,28 +69,9 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     private static final String DOCUMENTED = "DOCUMENTED";
 
     @Override
-    public String toString(List<? extends DocTree> tags, Element element) {
-        String string = null;
-
-        try {
-            String template =
-                render(toNode((UnknownInlineTagTree) tags.get(0), element),
-                       INDENTATION.length())
-                .replaceAll(Pattern.quote(DOCUMENTED + "=\"\""), "...");
-
-            string =
-                render(div(attr("class", "block"),
-                           pre("xml", template)));
-        } catch (Throwable throwable) {
-            string = render(warning(tags, element, throwable));
-        }
-
-        return string;
-    }
-
-    @Override
     public FluentNode toNode(UnknownInlineTagTree tag,
                              Element element) throws Throwable {
+        FluentNode node = null;
         TypeElement type = null;
         String name = getText(tag).trim();
 
@@ -107,7 +87,11 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
                                                + Task.class.getCanonicalName());
         }
 
-        return template(tag, asClass(type));
+        String template =
+            render(template(tag, asClass(type)), INDENTATION.length())
+            .replaceAll(Pattern.quote(DOCUMENTED + "=\"\""), "...");
+
+        return div(attr("class", "block"), pre("xml", template));
     }
 
     private FluentNode template(UnknownInlineTagTree tag, Class<?> type) {

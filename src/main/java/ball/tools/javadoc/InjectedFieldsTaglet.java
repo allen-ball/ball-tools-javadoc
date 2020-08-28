@@ -118,24 +118,24 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
 
         return div(attr("class", "summary"),
                    h3("Injected Field Summary"),
-                   table(tag, asClass(type), set));
+                   table(tag, element, asClass(type), set));
     }
 
-    private FluentNode table(UnknownInlineTagTree tag, Class<?> type,
-                             Set<Class<? extends Annotation>> set) {
+    private FluentNode table(UnknownInlineTagTree tag, Element element,
+                             Class<?> type, Set<Class<? extends Annotation>> set) {
         return table(thead(tr(th("Annotation(s)"), th("Field"))),
                      tbody(Stream.of(type.getDeclaredFields())
                            .filter(t -> (Stream.of(t.getAnnotations())
                                          .filter(a -> set.contains(a.annotationType()))
                                          .findFirst().isPresent()))
-                           .map(t -> tr(tag, t, set))));
+                           .map(t -> tr(tag, element, t, set))));
     }
 
-    private FluentNode tr(UnknownInlineTagTree tag, Field field,
-                          Set<Class<? extends Annotation>> set) {
+    private FluentNode tr(UnknownInlineTagTree tag, Element element,
+                          Field field, Set<Class<? extends Annotation>> set) {
         return tr(td(fragment(Stream.of(field.getAnnotations())
                               .filter(t -> set.contains(t.annotationType()))
-                              .map(t -> annotation(tag, t)))),
-                  td(declaration(tag, field)));
+                              .map(t -> annotation(tag, element, t)))),
+                  td(declaration(tag, element, field)));
     }
 }

@@ -63,138 +63,150 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * represented by the argument {@link Object}.
      *
      * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   target          The {@link URI} {@code target}.
      *
      * @return  The {@link URI} (may be {@code null}).
      */
-    public URI href(DocTree tag, Object target);
+    public URI href(DocTree tag, Element element, Object target);
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@link Node node}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   target          The target {@link TypeElement}.
      * @param   node            The child {@link Node} (may be
      *                          {@code null}).
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public FluentNode a(DocTree tag, TypeElement target, Node node);
+    public FluentNode a(DocTree tag, Element element, TypeElement target, Node node);
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@link Node node}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   type            The target {@link Class}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Class}.
      * @param   node            The child {@link Node} (may be
      *                          {@code null}).
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public FluentNode a(DocTree tag, Class<?> type, Node node);
+    public FluentNode a(DocTree tag, Element element, Class<?> target, Node node);
 
     /**
      * {@code <a href="}{@link Member}{@code ">}{@link Node node}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   member          The target {@link Member}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Member}.
      * @param   node            The child {@link Node} (may be
      *                          {@code null}).
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public FluentNode a(DocTree tag, Member member, Node node);
+    public FluentNode a(DocTree tag, Element element, Member target, Node node);
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@link Node node}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   name            The target {@link Class} name.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Class} name.
      * @param   node            The child {@link Node} (may be
      *                          {@code null}).
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public FluentNode a(DocTree tag, String name, Node node);
+    public FluentNode a(DocTree tag, Element element, String target, Node node);
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@code name}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   type            The target {@link Class}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Class}.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode a(DocTree tag, Class<?> type) {
-        return a(tag, type, (String) null);
+    public default FluentNode a(DocTree tag, Element element, Class<?> target) {
+        return a(tag, element, target, (String) null);
     }
 
     /**
      * {@code <a href="}{@link Class}{@code ">}{@link #code(String) code(name)}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   type            The target {@link Class}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Class}.
      * @param   name            The link name.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode a(DocTree tag, Class<?> type, String name) {
-        return a(tag, type, (name != null) ? code(name) : null);
+    public default FluentNode a(DocTree tag, Element element, Class<?> target, String name) {
+        return a(tag, element, target, (name != null) ? code(name) : null);
     }
 
     /**
      * {@code <a href="}{@link Member}{@code ">}{@link Member#getName()}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   member          The target {@link Member}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Member}.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode a(DocTree tag, Member member) {
-        return a(tag, member, (String) null);
+    public default FluentNode a(DocTree tag, Element element, Member target) {
+        return a(tag, element, target, (String) null);
     }
 
     /**
      * {@code <a href="}{@link Member}{@code ">}{@link #code(String) code(name)}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   member          The target {@link Member}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Member}.
      * @param   name            The link name.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode a(DocTree tag, Member member, String name) {
-        return a(tag, member, (name != null) ? code(name) : null);
+    public default FluentNode a(DocTree tag, Element element, Member target, String name) {
+        return a(tag, element, target, (name != null) ? code(name) : null);
     }
 
     /**
      * {@code <a href="}{@link Enum}{@code ">}{@link Enum#name() constant.name()}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
-     * @param   constant        The target {@link Enum}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
+     * @param   target          The target {@link Enum}.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode a(DocTree tag, Enum<?> constant) {
-        return a(tag, constant.getDeclaringClass(), constant.name());
+    public default FluentNode a(DocTree tag, Element element, Enum<?> target) {
+        return a(tag, element, target.getDeclaringClass(), target.name());
     }
 
     /**
-     * Dispatches call to {@link #declaration(DocTree,Field)} or
-     * {@link #declaration(DocTree,Method)} as appropriate.
+     * Dispatches call to {@link #declaration(DocTree,Element,Field)} or
+     * {@link #declaration(DocTree,Element,Method)} as appropriate.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   member          The target {@link Member}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Member member) {
+    public default FluentNode declaration(DocTree tag, Element element,
+                                          Member member) {
         FluentNode node = null;
 
         if (member instanceof Field) {
-            node = declaration(tag, (Field) member);
+            node = declaration(tag, element, (Field) member);
         } else if (member instanceof Method) {
-            node = declaration(tag, (Method) member);
+            node = declaration(tag, element, (Method) member);
         } else {
             throw new IllegalArgumentException(String.valueOf(member));
         }
@@ -206,33 +218,37 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * Method to generate a {@link Field} declaration with javadoc
      * hyperlinks.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   field           The target {@link Field}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Field field) {
+    public default FluentNode declaration(DocTree tag, Element element,
+                                          Field field) {
         return fragment(modifiers(field.getModifiers()),
-                        type(tag, field.getGenericType()),
+                        type(tag, element, field.getGenericType()),
                         code(SPACE),
-                        a(tag, field, (String) null));
+                        a(tag, element, field, (String) null));
     }
 
     /**
      * Method to generate a {@link Method} declaration with javadoc
      * hyperlinks.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   method          The target {@link Method}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Method method) {
+    public default FluentNode declaration(DocTree tag, Element element,
+                                          Method method) {
         FluentNode node =
             fragment(modifiers(method.getModifiers()),
-                     type(tag, method.getGenericReturnType()),
+                     type(tag, element, method.getGenericReturnType()),
                      code(SPACE),
-                     a(tag, method, (String) null));
+                     a(tag, element, method, (String) null));
 
         Parameter[] parameters = method.getParameters();
 
@@ -243,7 +259,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
                 node.add(code(", "));
             }
 
-            node.add(declaration(tag, parameters[i]));
+            node.add(declaration(tag, element, parameters[i]));
         }
 
         node.add(code(")"));
@@ -255,14 +271,16 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * Method to generate a {@link Parameter} declaration with javadoc
      * hyperlinks.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   parameter       The target {@link Parameter}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Parameter parameter) {
+    public default FluentNode declaration(DocTree tag, Element element,
+                                          Parameter parameter) {
         return fragment(modifiers(parameter.getModifiers()),
-                        type(tag, parameter.getParameterizedType()),
+                        type(tag, element, parameter.getParameterizedType()),
                         code(SPACE),
                         code(parameter.getName()));
     }
@@ -279,18 +297,20 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     /**
      * {@code <a href="}{@link Annotation}{@code ">}{@link #code(String) code(String.valueOf(annotation))}{@code </a>}
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   annotation      The target {@link Annotation}.
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode annotation(DocTree tag, Annotation annotation) {
+    public default FluentNode annotation(DocTree tag, Element element,
+                                         Annotation annotation) {
         Class<?> type = annotation.annotationType();
         String string =
             String.valueOf(annotation)
             .replace(type.getCanonicalName(), type.getSimpleName());
 
-        return fragment().add(a(href(tag, type), code(string)));
+        return fragment().add(a(href(tag, element, type), code(string)));
     }
 
     /**
@@ -314,17 +334,18 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     /**
      * Method to generate types for {@code declaration()} methods.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   type            The target {@link Type}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode type(DocTree tag, Type type) {
+    public default FluentNode type(DocTree tag, Element element, Type type) {
         FluentNode node = null;
 
         if (type instanceof ParameterizedType) {
             node =
-                fragment(type(tag, ((ParameterizedType) type).getRawType()));
+                fragment(type(tag, element, ((ParameterizedType) type).getRawType()));
 
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
 
@@ -335,12 +356,12 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
                     node.add(code(","));
                 }
 
-                node.add(type(tag, types[i]));
+                node.add(type(tag, element, types[i]));
             }
 
             node.add(code(">"));
         } else if (type instanceof Class<?>) {
-            node = a(tag, (Class<?>) type);
+            node = a(tag, element, (Class<?>) type);
         } else {
             node = code(type.getTypeName());
         }
@@ -351,7 +372,8 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     /**
      * {@code <table>}{@link TableModel model}{@code </table>}
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   model           The {@link TableModel} to use to create the
      *                          new table {@link org.w3c.dom.Element}.
      * @param   stream          The {@link Stream} of {@link Node}s to
@@ -360,14 +382,16 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode table(DocTree tag, TableModel model, Stream<Node> stream) {
-        return table(tag, model, stream.toArray(Node[]::new));
+    public default FluentNode table(DocTree tag, Element element,
+                                    TableModel model, Stream<Node> stream) {
+        return table(tag, element, model, stream.toArray(Node[]::new));
     }
 
     /**
      * {@code <table>}{@link TableModel model}{@code </table>}
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   model           The {@link TableModel} to use to create the
      *                          new table {@link org.w3c.dom.Element}.
      * @param   nodes           The {@link Node}s to append to the newly
@@ -376,7 +400,8 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode table(DocTree tag, TableModel model, Node... nodes) {
+    public default FluentNode table(DocTree tag, Element element,
+                                    TableModel model, Node... nodes) {
         FluentNode table = table();
         String[] names =
             IntStream.range(0, model.getColumnCount())
@@ -393,7 +418,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
                        .boxed()
                        .map(y -> tr(IntStream.range(0, names.length)
                                     .boxed()
-                                    .map(x -> td(toHTML(tag,
+                                    .map(x -> td(toHTML(tag, element,
                                                         model.getValueAt(y, x))))))));
 
         return table.add(nodes);
@@ -402,12 +427,13 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     /**
      * Method to get a Javadoc HTML representation of an {@link Object}.
      *
-     * @param   tag             The {@link DocTree}.
+     * @param   tag             The context {@link DocTree}.
+     * @param   element         The context {@link Element}.
      * @param   object          The target {@link Object}.
      *
      * @return  {@link org.w3c.dom.Node}
      */
-    public default FluentNode toHTML(DocTree tag, Object object) {
+    public default FluentNode toHTML(DocTree tag, Element element, Object object) {
         FluentNode node = null;
 
         if (object instanceof byte[]) {
@@ -426,22 +452,22 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
         } else if (object instanceof long[]) {
             node = text(Arrays.toString((long[]) object));
         } else if (object instanceof Object[]) {
-            node = toHTML(tag, Arrays.asList((Object[]) object));
+            node = toHTML(tag, element, Arrays.asList((Object[]) object));
         } else if (object instanceof Type) {
-            node = type(tag, (Type) object);
+            node = type(tag, element, (Type) object);
         } else if (object instanceof Enum<?>) {
-            node = a(tag, (Enum<?>) object);
+            node = a(tag, element, (Enum<?>) object);
         } else if (object instanceof Field) {
-            node = a(tag, (Field) object);
+            node = a(tag, element, (Field) object);
         } else if (object instanceof Constructor) {
-            node = a(tag, (Constructor) object);
+            node = a(tag, element, (Constructor) object);
         } else if (object instanceof Method) {
-            node = a(tag, (Method) object);
+            node = a(tag, element, (Method) object);
         } else if (object instanceof Collection<?>) {
             List<Node> nodes =
                 ((Collection<?>) object)
                 .stream()
-                .map(t -> toHTML(tag, t))
+                .map(t -> toHTML(tag, element, t))
                 .collect(Collectors.toList());
 
             for (int i = nodes.size() - 1; i > 0; i -= 1) {

@@ -69,6 +69,6 @@ public class BeanInfoTaglet extends AbstractInlineTaglet {
 
         return div(attr("class", "summary"),
                    h3("Bean Property Summary"),
-                   table(tag, model));
+                   table(tag, element, model));
     }
 }

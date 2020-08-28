@@ -33,6 +33,7 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.DocTreePath;
 import com.sun.source.util.DocTrees;
 import com.sun.source.util.SimpleDocTreeVisitor;
+import com.sun.source.util.TreePath;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.io.StringWriter;
@@ -150,7 +151,8 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         try {
             node = toNode(tags, element);
         } catch (Throwable throwable) {
-            node = warning(tags, element, throwable);
+            print(WARNING, tags.get(0), element, "%s", throwable.toString());
+            node = toNode(tags.get(0), element, throwable);
         }
 
         return render(node);
@@ -169,6 +171,22 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      */
     protected abstract Node toNode(List<? extends DocTree> tags,
                                    Element element) throws Throwable;
+
+    private FluentNode toNode(DocTree tag, Element element,
+                              Throwable throwable) {
+        String string = "@" + getName();
+
+        if (isNotEmpty(getText(tag))) {
+            string += SPACE + getText(tag);
+        }
+
+        if (isInlineTag()) {
+            string = "{" + string + "}";
+        }
+
+        return fragment(p(b(u(string))),
+                        comment(ExceptionUtils.getStackTrace(throwable)));
+    }
 
     /**
      * Method to render a {@link Node} to a {@link String} without
@@ -220,48 +238,25 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     /**
-     * {@code <}{@code p><b><u>}{@link DocTree tag}{@code </u></b></p}{@code >}
-     * {@code <!}{@code -- }{@link Throwable stack trace}{@code --}{@code >}
+     * Method to print a diagnostic message.
      *
-     * @param   tags            The list of instances of this tag.
-     * @param   element         The element to which the enclosing comment
-     *                          belongs.
-     * @param   throwable       The {@link Throwable}.
+     * @param   kind            The {@link javax.tools.Diagnostic.Kind}.
+     * @param   tag             The offending {@link DocTree}.
+     * @param   element         The offending {@link Element}.
+     * @param   format          The message format {@link String}.
+     * @param   argv            Optional arguments to the message format
+     *                          {@link String}.
      *
-     * @return  {@link org.w3c.dom.DocumentFragment}
+     * @see DocTrees#printMessage(Diagnostic.Kind,CharSequence,DocTree,DocCommentTree,CompilationUnitTree)
      */
-    protected FluentNode warning(List<? extends DocTree> tags, Element element,
-                                 Throwable throwable) {
-        return warning(tags.get(0), element, throwable);
-    }
+    protected void print(Diagnostic.Kind kind, DocTree tag, Element element,
+                         String format, Object... argv) {
+        DocCommentTree comment = trees.getDocCommentTree(element);
+        TreePath path = trees.getPath(element);
+        CompilationUnitTree unit =
+            (path != null) ? path.getCompilationUnit() : null;
 
-    /**
-     * {@code <}{@code p><b><u>}{@link DocTree tag}{@code </u></b></p}{@code >}
-     * {@code <!}{@code -- }{@link Throwable stack trace}{@code --}{@code >}
-     *
-     * @param   tag             The tag.
-     * @param   element         The element to which the enclosing comment
-     *                          belongs.
-     * @param   throwable       The {@link Throwable}.
-     *
-     * @return  {@link org.w3c.dom.DocumentFragment}
-     */
-    protected FluentNode warning(DocTree tag, Element element,
-                                 Throwable throwable) {
-        print(WARNING, tag, "%s", throwable.toString());
-
-        String string = "@" + getName();
-
-        if (isNotEmpty(getText(tag))) {
-            string += SPACE + getText(tag);
-        }
-
-        if (isInlineTag()) {
-            string = "{" + string + "}";
-        }
-
-        return fragment(p(b(u(string))),
-                        comment(ExceptionUtils.getStackTrace(throwable)));
+        print(kind, tag, comment, unit, format, argv);
     }
 
     /**
@@ -269,6 +264,8 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      *
      * @param   kind            The {@link javax.tools.Diagnostic.Kind}.
      * @param   tag             The offending {@link DocTree}.
+     * @param   comment         The offending {@link DocCommentTree}.
+     * @param   unit            The offending {@link CompilationUnitTree}.
      * @param   format          The message format {@link String}.
      * @param   argv            Optional arguments to the message format
      *                          {@link String}.
@@ -276,10 +273,8 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @see DocTrees#printMessage(Diagnostic.Kind,CharSequence,DocTree,DocCommentTree,CompilationUnitTree)
      */
     protected void print(Diagnostic.Kind kind, DocTree tag,
+                         DocCommentTree comment, CompilationUnitTree unit,
                          String format, Object... argv) {
-        DocCommentTree comment = null;
-        CompilationUnitTree unit = null;
-
         trees.printMessage(kind, String.format(format, argv),
                            tag, comment, unit);
     }
@@ -361,7 +356,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     @Override
-    public URI href(DocTree tag, Object target) {
+    public URI href(DocTree tag, Element element, Object target) {
         URI uri = null;
 
         if (href == null) {
@@ -369,28 +364,37 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         }
 
         if (target != null) {
+            Class<?> type = target.getClass();
+
             try {
                 Method method =
                     AbstractTaglet.class
                     .getDeclaredMethod(href.getName(),
-                                       DocTree.class, target.getClass());
+                                       DocTree.class, Element.class, type);
 
                 if (! Objects.equals(href, method)) {
-                    uri = (URI) method.invoke(this, tag, target);
+                    uri = (URI) method.invoke(this, tag, element, target);
                 }
             } catch (Exception exception) {
-                print(WARNING, tag, null,
-                      "No method to get href for %s",
-                      target.getClass().getName());
+                print(WARNING, tag, element,
+                      "No method to get href for %s", type.getName());
             }
         }
 
         return uri;
     }
 
+    public URI href(DocTree tag, Element element, Class<?> target) {
+        return href(tag, element, asTypeElement(target));
+    }
+
+    public URI href(DocTree tag, Element element, TypeElement target) {
+        return null;
+    }
+
     @Override
-    public FluentNode a(DocTree tag, TypeElement target, Node node) {
-        URI href = href(tag, target);
+    public FluentNode a(DocTree tag, Element element, TypeElement target, Node node) {
+        URI href = href(tag, element, target);
 
         if (node == null) {
             Name name =
@@ -403,7 +407,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     @Override
-    public FluentNode a(DocTree tag, Class<?> target, Node node) {
+    public FluentNode a(DocTree tag, Element element, Class<?> target, Node node) {
         String brackets = EMPTY;
 
         while (target.isArray()) {
@@ -411,7 +415,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             target = target.getComponentType();
         }
 
-        URI href = href(tag, target);
+        URI href = href(tag, element, target);
 
         if (node == null) {
             String name =
@@ -424,16 +428,16 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     @Override
-    public FluentNode a(DocTree tag, Member member, Node node) {
+    public FluentNode a(DocTree tag, Element element, Member member, Node node) {
         if (node == null) {
             node = code(member.getName());
         }
 
-        return a(href(tag, member), node);
+        return a(href(tag, element, member), node);
     }
 
     @Override
-    public FluentNode a(DocTree tag, String name, Node node) {
+    public FluentNode a(DocTree tag, Element element, String name, Node node) {
         TypeElement target = null;
 
         if (node == null) {
@@ -444,7 +448,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             }
         }
 
-        return a(tag, target, node);
+        return a(tag, element, target, node);
     }
 
     /**

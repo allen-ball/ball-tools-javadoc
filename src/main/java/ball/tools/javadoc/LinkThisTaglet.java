@@ -45,12 +45,11 @@ public class LinkThisTaglet extends AbstractInlineTaglet {
     }
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         if (isNotEmpty(getText(tag).trim())) {
             throw new IllegalArgumentException("Invalid argument");
         }
 
-        return a(tag, getEnclosingTypeElement(element), code("this"));
+        return a(tag, element, getEnclosingTypeElement(element), code("this"));
     }
 }

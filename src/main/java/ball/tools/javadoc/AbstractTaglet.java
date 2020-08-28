@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
@@ -364,20 +365,26 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         }
 
         if (target != null) {
-            Class<?> type = target.getClass();
+            Class<?>[] parameters =
+                Stream.of(DocTree.class, Element.class, target.getClass())
+                .toArray(Class<?>[]::new);
 
             try {
                 Method method =
                     AbstractTaglet.class
-                    .getDeclaredMethod(href.getName(),
-                                       DocTree.class, Element.class, type);
+                    .getDeclaredMethod(href.getName(), parameters);
 
                 if (! Objects.equals(href, method)) {
-                    uri = (URI) method.invoke(this, tag, element, target);
+                    Object[] arguments =
+                        Stream.of(tag, element, target)
+                        .toArray(Object[]::new);
+
+                    uri = (URI) method.invoke(this, arguments);
                 }
             } catch (Exception exception) {
                 print(WARNING, tag, element,
-                      "No method to get href for %s", type.getName());
+                      "No method to get href for %s",
+                      parameters[parameters.length - 1].getName());
             }
         }
 

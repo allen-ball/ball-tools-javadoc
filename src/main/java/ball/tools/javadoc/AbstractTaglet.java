@@ -391,11 +391,17 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return uri;
     }
 
-    public URI href(DocTree tag, Element element, Class<?> target) {
+    private URI href(DocTree tag, Element element, Class<?> target) {
         return href(tag, element, asTypeElement(target));
     }
 
-    public URI href(DocTree tag, Element element, TypeElement target) {
+    private URI href(DocTree tag, Element element, Element target) {
+        return href(tag, element, trees.getPath(target));
+    }
+
+    private URI href(DocTree tag, Element element, TreePath target) {
+        TreePath context = trees.getPath(element);
+
         return null;
     }
 

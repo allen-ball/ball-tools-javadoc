@@ -80,10 +80,6 @@
           </artifactSet>
           <filters>
             <filter>
-              <artifact>ball:ball-util</artifact>
-              <excludes>LICENSE</excludes>
-            </filter>
-            <filter>
               <artifact>*:*</artifact>
               <excludes>META-INF/MANIFEST.MF</excludes>
               <excludes>**/module-info.class</excludes>
@@ -95,7 +91,7 @@
               <addHeader>false</addHeader>
             </transformer>
             <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-              <resource>DEPENDENCIES</resource>
+              <resource>META-INF/DEPENDENCIES</resource>
             </transformer>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>

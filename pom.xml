@@ -71,7 +71,6 @@
           </execution>
         </executions>
         <configuration>
-          <createDependencyReducedPom>false</createDependencyReducedPom>
           <artifactSet>
             <excludes>
               <exclude>javax.annotation:javax.annotation-api</exclude>

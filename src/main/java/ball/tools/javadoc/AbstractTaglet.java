@@ -64,7 +64,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.w3c.dom.Node;
 
 import static java.util.stream.Collectors.joining;
-* /import static javax.tools.Diagnostic.Kind.NOTE; */
+/* import static javax.tools.Diagnostic.Kind.NOTE; */
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.xml.transform.OutputKeys.INDENT;

@@ -358,7 +358,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
     /**
      * {@link jdk.javadoc.doclet.Taglet} to provide
-     * {@link.uri https://maven.apache.org/pom.html POM} POM coordinates as
+     * {@link.uri https://maven.apache.org/pom.html POM} coordinates as
      * a {@code <dependency/>} element to include this documented
      * {@link Class} or {@link Package}.
      *

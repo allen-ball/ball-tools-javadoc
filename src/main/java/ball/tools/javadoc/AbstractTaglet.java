@@ -48,6 +48,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.xml.transform.Transformer;
@@ -62,6 +64,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.w3c.dom.Node;
 
 import static java.util.stream.Collectors.joining;
+* /import static javax.tools.Diagnostic.Kind.NOTE; */
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.xml.transform.OutputKeys.INDENT;
@@ -95,8 +98,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @param   taglet          The {@link AbstractTaglet} instance to
      *                          register.
      */
-    protected static void register(Map<Object,Object> map,
-                                   AbstractTaglet taglet) {
+    protected static void register(Map<Object,Object> map, AbstractTaglet taglet) {
         map.remove(taglet.getName());
         map.put(taglet.getName(), taglet);
     }
@@ -395,14 +397,40 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href(tag, element, asTypeElement(target));
     }
 
-    private URI href(DocTree tag, Element element, Element target) {
-        return href(tag, element, trees.getPath(target));
+    private URI href(DocTree tag, Element element, TypeElement target) {
+        URI href = null;
+
+        if (target != null && env.isIncluded(target)) {
+            int depth = getComponentsOf(elements.getPackageOf(element)).length;
+            String path =
+                Stream.concat(Stream.generate(() -> "..").limit(depth),
+                              Stream.of(getComponentsOf(elements.getPackageOf(target))))
+                .collect(joining("/", "./", "/"))
+                + getCanonicalNameOf(target) +".html";
+
+            href = URI.create(path).normalize();
+        }
+
+        /* print(NOTE, tag, element, "%s: %s -> %s", href, element, target); */
+
+        return href;
     }
 
-    private URI href(DocTree tag, Element element, TreePath target) {
-        TreePath context = trees.getPath(element);
+    private String[] getComponentsOf(PackageElement element) {
+        return element.isUnnamed() ? new String[] { } : getComponentsOf((QualifiedNameable) element);
+    }
 
-        return null;
+    private String[] getComponentsOf(QualifiedNameable element) {
+        return element.getQualifiedName().toString().split("[.]");
+    }
+
+    private String getCanonicalNameOf(TypeElement element) {
+        String string =
+            Stream.of(getComponentsOf(element))
+            .skip(getComponentsOf(elements.getPackageOf(element)).length)
+            .collect(joining("."));
+
+        return string;
     }
 
     @Override

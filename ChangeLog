@@ -1,7 +1,8 @@
-2020-11-23  Allen D. Ball  <ball@hcf.dev>
+2020-11-24  Allen D. Ball  <ball@hcf.dev>
 
 	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
-	Interim check-in: Calculate Javadoc hrefs for documented classes.
+	Interim check-in: Calculate Javadoc hrefs for documented classes,
+	constructors, fields, and methods.
 
 2020-08-20  Allen D. Ball  <ball@hcf.dev>
 

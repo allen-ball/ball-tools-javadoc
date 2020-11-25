@@ -37,6 +37,8 @@ import com.sun.source.util.TreePath;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -47,10 +49,12 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -64,7 +68,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.w3c.dom.Node;
 
 import static java.util.stream.Collectors.joining;
-/* import static javax.tools.Diagnostic.Kind.NOTE; */
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.xml.transform.OutputKeys.INDENT;
@@ -397,7 +400,55 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href(tag, element, asTypeElement(target));
     }
 
+    private URI href(DocTree tag, Element element, Constructor<?> target) {
+        return href(tag, element, asExecutableElement(target));
+    }
+
+    private URI href(DocTree tag, Element element, Field target) {
+        return href(tag, element, asVariableElement(target));
+    }
+
+    private URI href(DocTree tag, Element element, Method target) {
+        return href(tag, element, asExecutableElement(target));
+    }
+
     private URI href(DocTree tag, Element element, TypeElement target) {
+        return href(tag, element, target, null);
+    }
+
+    private URI href(DocTree tag, Element element, ExecutableElement target) {
+        URI href = null;
+
+        if (target != null && env.isIncluded(target)) {
+            Element enclosing = target.getEnclosingElement();
+
+            if (enclosing instanceof TypeElement) {
+                href =
+                    href(tag, element, (TypeElement) enclosing,
+                         target.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
+            }
+        }
+
+        return href;
+    }
+
+    private URI href(DocTree tag, Element element, VariableElement target) {
+        URI href = null;
+
+        if (target != null && env.isIncluded(target)) {
+            Element enclosing = target.getEnclosingElement();
+
+            if (enclosing instanceof TypeElement) {
+                href =
+                    href(tag, element, (TypeElement) enclosing,
+                         target.getSimpleName().toString());
+            }
+        }
+
+        return href;
+    }
+
+    private URI href(DocTree tag, Element element, TypeElement target, String fragment) {
         URI href = null;
 
         if (target != null && env.isIncluded(target)) {
@@ -409,9 +460,11 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 + getCanonicalNameOf(target) +".html";
 
             href = URI.create(path).normalize();
-        }
 
-        /* print(NOTE, tag, element, "%s: %s -> %s", href, element, target); */
+            if (fragment != null) {
+                href = href.resolve("#" + fragment);
+            }
+        }
 
         return href;
     }

@@ -68,6 +68,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.w3c.dom.Node;
 
 import static java.util.stream.Collectors.joining;
+import static javax.tools.Diagnostic.Kind.NOTE;
 import static javax.tools.Diagnostic.Kind.WARNING;
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.xml.transform.OutputKeys.INDENT;
@@ -113,7 +114,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     /** See {@link DocletEnvironment#getDocTrees()}. */
     protected DocTrees trees = null;
     private transient ClassLoader loader = null;
-    private transient Method href = null;
+    private transient Method dispatcher = null;
 
     {
         try {
@@ -363,10 +364,10 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
     @Override
     public URI href(DocTree tag, Element element, Object target) {
-        URI uri = null;
+        URI href = null;
 
-        if (href == null) {
-            href = new Object() { }.getClass().getEnclosingMethod();
+        if (dispatcher == null) {
+            dispatcher = new Object() { }.getClass().getEnclosingMethod();
         }
 
         if (target != null) {
@@ -377,14 +378,14 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             try {
                 Method method =
                     AbstractTaglet.class
-                    .getDeclaredMethod(href.getName(), parameters);
+                    .getDeclaredMethod(dispatcher.getName(), parameters);
 
-                if (! Objects.equals(href, method)) {
+                if (! Objects.equals(dispatcher, method)) {
                     Object[] arguments =
                         Stream.of(tag, element, target)
                         .toArray(Object[]::new);
 
-                    uri = (URI) method.invoke(this, arguments);
+                    href = (URI) method.invoke(this, arguments);
                 }
             } catch (Exception exception) {
                 print(WARNING, tag, element,
@@ -393,23 +394,27 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             }
         }
 
-        return uri;
+        return href;
     }
 
     private URI href(DocTree tag, Element element, Class<?> target) {
-        return href(tag, element, asTypeElement(target));
+        return href(tag, element, target, null);
     }
 
     private URI href(DocTree tag, Element element, Constructor<?> target) {
-        return href(tag, element, asExecutableElement(target));
+        Class<?> type = target.getDeclaringClass();
+
+        return href(tag, element, type,
+                    type.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
     }
 
     private URI href(DocTree tag, Element element, Field target) {
-        return href(tag, element, asVariableElement(target));
+        return href(tag, element, target.getDeclaringClass(), target.getName());
     }
 
     private URI href(DocTree tag, Element element, Method target) {
-        return href(tag, element, asExecutableElement(target));
+        return href(tag, element, target.getDeclaringClass(),
+                    target.getName() + signature(target).replaceAll("[(),]", "-"));
     }
 
     private URI href(DocTree tag, Element element, TypeElement target) {
@@ -448,19 +453,39 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
+    private URI href(DocTree tag, Element element, Class<?> target, String fragment) {
+        URI href = href(tag, element, asTypeElement(target), fragment);
+
+        if (href == null) {
+            href = URI.create("ext:" + target.getCanonicalName());
+
+            if (href != null) {
+                if (fragment != null) {
+                    href = href.resolve("#" + fragment);
+                }
+            }
+        }
+
+        return href;
+    }
+
     private URI href(DocTree tag, Element element, TypeElement target, String fragment) {
         URI href = null;
 
-        if (target != null && env.isIncluded(target)) {
-            int depth = getComponentsOf(elements.getPackageOf(element)).length;
-            String path =
-                Stream.concat(Stream.generate(() -> "..").limit(depth),
-                              Stream.of(getComponentsOf(elements.getPackageOf(target))))
-                .collect(joining("/", "./", "/"))
-                + getCanonicalNameOf(target) + ".html";
+        if (target != null) {
+            if (env.isIncluded(target)) {
+                int depth = getComponentsOf(elements.getPackageOf(element)).length;
+                String path =
+                    Stream.concat(Stream.generate(() -> "..").limit(depth),
+                                  Stream.of(getComponentsOf(elements.getPackageOf(target))))
+                    .collect(joining("/", "./", "/"))
+                    + getCanonicalNameOf(target) + ".html";
 
-            href = URI.create(path).normalize();
+                href = URI.create(path).normalize();
+            }
+        }
 
+        if (href != null) {
             if (fragment != null) {
                 href = href.resolve("#" + fragment);
             }

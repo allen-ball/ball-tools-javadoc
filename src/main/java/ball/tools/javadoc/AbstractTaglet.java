@@ -457,7 +457,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 Stream.concat(Stream.generate(() -> "..").limit(depth),
                               Stream.of(getComponentsOf(elements.getPackageOf(target))))
                 .collect(joining("/", "./", "/"))
-                + getCanonicalNameOf(target) +".html";
+                + getCanonicalNameOf(target) + ".html";
 
             href = URI.create(path).normalize();
 
@@ -474,7 +474,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     private String[] getComponentsOf(QualifiedNameable element) {
-        return element.getQualifiedName().toString().split("[.]");
+        return element.getQualifiedName().toString().split(Pattern.quote("."));
     }
 
     private String getCanonicalNameOf(TypeElement element) {

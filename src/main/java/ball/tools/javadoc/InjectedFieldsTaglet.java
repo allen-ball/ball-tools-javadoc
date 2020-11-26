@@ -81,13 +81,14 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
             Class<? extends Annotation> annotation = null;
 
             try {
-                annotation = Class.forName(name).asSubclass(Annotation.class);
+                annotation =
+                    Class.forName(name, false, getClassLoader())
+                    .asSubclass(Annotation.class);
             } catch (Exception exception) {
             }
 
             if (annotation != null) {
-                Retention retention =
-                    annotation.getAnnotation(Retention.class);
+                Retention retention = annotation.getAnnotation(Retention.class);
 
                 if (retention == null) {
                     throw new IllegalStateException(annotation.getCanonicalName()

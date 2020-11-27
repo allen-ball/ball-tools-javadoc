@@ -63,12 +63,12 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * represented by the argument {@link Object}.
      *
      * @param   tag             The context {@link DocTree}.
-     * @param   element         The context {@link Element}.
+     * @param   context         The context {@link Element}.
      * @param   target          The {@link URI} {@code target}.
      *
      * @return  The {@link URI} (may be {@code null}).
      */
-    public URI href(DocTree tag, Element element, Object target);
+    public URI href(DocTree tag, Element context, Object target);
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@link Node node}{@code </a>}

@@ -23,7 +23,6 @@ package ball.tools.javadoc;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.net.URI;
-import java.util.Map;
 import javax.lang.model.element.Element;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -38,12 +37,6 @@ import lombok.ToString;
 @TagletName("link.rfc")
 @NoArgsConstructor @ToString
 public class LinkRFCTaglet extends AbstractInlineTaglet {
-    private static final LinkRFCTaglet INSTANCE = new LinkRFCTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     private static final String TEXT = "RFC%d";
     private static final String PROTOCOL = "https";
     private static final String HOST = "www.rfc-editor.org";

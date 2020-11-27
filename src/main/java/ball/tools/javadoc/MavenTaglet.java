@@ -33,7 +33,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -138,12 +137,6 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     @TagletName("maven.plugin.fields")
     @NoArgsConstructor @ToString
     public static class PluginFields extends MavenTaglet {
-        private static final PluginFields INSTANCE = new PluginFields();
-
-        public static void register(Map<Object,Object> map) {
-            register(map, INSTANCE);
-        }
-
         private static final String PLUGIN_XML = "META-INF/maven/plugin.xml";
 
         @Override
@@ -256,12 +249,6 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     @TagletName("maven.plugin.help")
     @NoArgsConstructor @ToString
     public static class PluginHelp extends MavenTaglet {
-        private static final PluginHelp INSTANCE = new PluginHelp();
-
-        public static void register(Map<Object,Object> map) {
-            register(map, INSTANCE);
-        }
-
         private static final String NAME = "plugin-help.xml";
         private static final Pattern PATTERN =
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/"
@@ -369,12 +356,6 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     @TagletName("pom.coordinates")
     @NoArgsConstructor @ToString
     public static class Coordinates extends MavenTaglet {
-        private static final Coordinates INSTANCE = new Coordinates();
-
-        public static void register(Map<Object,Object> map) {
-            register(map, INSTANCE);
-        }
-
         private static final Pattern PATTERN =
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/pom[.]properties");
 

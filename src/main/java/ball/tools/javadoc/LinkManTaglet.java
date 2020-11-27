@@ -27,7 +27,6 @@ import ball.util.PatternMatcherBean;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.io.File;
-import java.util.Map;
 import javax.lang.model.element.Element;
 import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
@@ -44,12 +43,6 @@ import lombok.ToString;
 @NoArgsConstructor @ToString
 public class LinkManTaglet extends AbstractInlineTaglet
                            implements PatternMatcherBean {
-    private static final LinkManTaglet INSTANCE = new LinkManTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     private String name = null;
     private String section = null;
 

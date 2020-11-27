@@ -23,7 +23,6 @@ package ball.tools.javadoc;
 import ball.beans.PropertyDescriptorsTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
-import java.util.Map;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import lombok.NoArgsConstructor;
@@ -45,12 +44,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @TagletName("bean.info")
 @NoArgsConstructor @ToString
 public class BeanInfoTaglet extends AbstractInlineTaglet {
-    private static final BeanInfoTaglet INSTANCE = new BeanInfoTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag,
                              Element element) throws Throwable {

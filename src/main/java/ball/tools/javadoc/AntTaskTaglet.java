@@ -55,12 +55,6 @@ import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
 @TagletName("ant.task")
 @NoArgsConstructor @ToString
 public class AntTaskTaglet extends AbstractInlineTaglet {
-    private static final AntTaskTaglet INSTANCE = new AntTaskTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     private static final String NO = "no";
     private static final String YES = "yes";
 

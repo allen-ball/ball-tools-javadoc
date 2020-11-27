@@ -44,7 +44,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -93,20 +92,6 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                                      implements AnnotatedTaglet,
                                                 JavadocHTMLTemplates,
                                                 XalanConstants {
-
-    /**
-     * Implementation method for
-     * {@code public static void register(Map<Object,Object> map)}.
-     *
-     * @param   map             The {@link Map} to update.
-     * @param   taglet          The {@link AbstractTaglet} instance to
-     *                          register.
-     */
-    protected static void register(Map<Object,Object> map, AbstractTaglet taglet) {
-        map.remove(taglet.getName());
-        map.put(taglet.getName(), taglet);
-    }
-
     private final Transformer transformer;
     private final FluentDocument document;
     private DocletEnvironment env = null;
@@ -363,7 +348,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     @Override
-    public URI href(DocTree tag, Element element, Object target) {
+    public URI href(DocTree tag, Element context, Object target) {
         URI href = null;
 
         if (dispatcher == null) {
@@ -382,13 +367,13 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
                 if (! Objects.equals(dispatcher, method)) {
                     Object[] arguments =
-                        Stream.of(tag, element, target)
+                        Stream.of(tag, context, target)
                         .toArray(Object[]::new);
 
                     href = (URI) method.invoke(this, arguments);
                 }
             } catch (Exception exception) {
-                print(WARNING, tag, element,
+                print(WARNING, tag, context,
                       "No method to get href for %s",
                       parameters[parameters.length - 1].getName());
             }
@@ -397,31 +382,31 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
-    private URI href(DocTree tag, Element element, Class<?> target) {
-        return href(tag, element, target, null);
+    private URI href(DocTree tag, Element context, Class<?> target) {
+        return href(tag, context, target, null);
     }
 
-    private URI href(DocTree tag, Element element, Constructor<?> target) {
+    private URI href(DocTree tag, Element context, Constructor<?> target) {
         Class<?> type = target.getDeclaringClass();
 
-        return href(tag, element, type,
+        return href(tag, context, type,
                     type.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
     }
 
-    private URI href(DocTree tag, Element element, Field target) {
-        return href(tag, element, target.getDeclaringClass(), target.getName());
+    private URI href(DocTree tag, Element context, Field target) {
+        return href(tag, context, target.getDeclaringClass(), target.getName());
     }
 
-    private URI href(DocTree tag, Element element, Method target) {
-        return href(tag, element, target.getDeclaringClass(),
+    private URI href(DocTree tag, Element context, Method target) {
+        return href(tag, context, target.getDeclaringClass(),
                     target.getName() + signature(target).replaceAll("[(),]", "-"));
     }
 
-    private URI href(DocTree tag, Element element, TypeElement target) {
-        return href(tag, element, target, null);
+    private URI href(DocTree tag, Element context, TypeElement target) {
+        return href(tag, context, target, null);
     }
 
-    private URI href(DocTree tag, Element element, ExecutableElement target) {
+    private URI href(DocTree tag, Element context, ExecutableElement target) {
         URI href = null;
 
         if (target != null && env.isIncluded(target)) {
@@ -429,7 +414,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
             if (enclosing instanceof TypeElement) {
                 href =
-                    href(tag, element, (TypeElement) enclosing,
+                    href(tag, context, (TypeElement) enclosing,
                          target.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
             }
         }
@@ -437,7 +422,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
-    private URI href(DocTree tag, Element element, VariableElement target) {
+    private URI href(DocTree tag, Element context, VariableElement target) {
         URI href = null;
 
         if (target != null && env.isIncluded(target)) {
@@ -445,7 +430,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
             if (enclosing instanceof TypeElement) {
                 href =
-                    href(tag, element, (TypeElement) enclosing,
+                    href(tag, context, (TypeElement) enclosing,
                          target.getSimpleName().toString());
             }
         }
@@ -453,11 +438,11 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
-    private URI href(DocTree tag, Element element, Class<?> target, String fragment) {
-        URI href = href(tag, element, asTypeElement(target), fragment);
+    private URI href(DocTree tag, Element context, Class<?> target, String fragment) {
+        URI href = href(tag, context, asTypeElement(target), fragment);
 
         if (href == null) {
-            href = URI.create("ext:" + target.getCanonicalName());
+            href = null;
 
             if (href != null) {
                 if (fragment != null) {
@@ -469,12 +454,12 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
-    private URI href(DocTree tag, Element element, TypeElement target, String fragment) {
+    private URI href(DocTree tag, Element context, TypeElement target, String fragment) {
         URI href = null;
 
         if (target != null) {
             if (env.isIncluded(target)) {
-                int depth = getComponentsOf(elements.getPackageOf(element)).length;
+                int depth = getComponentsOf(elements.getPackageOf(context)).length;
                 String path =
                     Stream.concat(Stream.generate(() -> "..").limit(depth),
                                   Stream.of(getComponentsOf(elements.getPackageOf(target))))

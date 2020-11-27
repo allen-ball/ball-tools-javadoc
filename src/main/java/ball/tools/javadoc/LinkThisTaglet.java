@@ -22,7 +22,6 @@ package ball.tools.javadoc;
  */
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
-import java.util.Map;
 import javax.lang.model.element.Element;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -38,12 +37,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @TagletName("link.this")
 @NoArgsConstructor @ToString
 public class LinkThisTaglet extends AbstractInlineTaglet {
-    private static final LinkThisTaglet INSTANCE = new LinkThisTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         if (isNotEmpty(getText(tag).trim())) {

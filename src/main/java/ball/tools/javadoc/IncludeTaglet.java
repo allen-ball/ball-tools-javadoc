@@ -48,12 +48,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @TagletName("include")
 @NoArgsConstructor @ToString
 public class IncludeTaglet extends AbstractInlineTaglet {
-    private static final IncludeTaglet INSTANCE = new IncludeTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag,
                              Element element) throws Throwable {

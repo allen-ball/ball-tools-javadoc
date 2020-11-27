@@ -26,7 +26,6 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
@@ -46,13 +45,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @TagletName("injected.fields")
 @NoArgsConstructor @ToString
 public class InjectedFieldsTaglet extends AbstractInlineTaglet {
-    private static final InjectedFieldsTaglet INSTANCE =
-        new InjectedFieldsTaglet();
-
-    public static void register(Map<Object,Object> map) {
-        register(map, INSTANCE);
-    }
-
     private static final String[] NAMES = new String[] {
         javax.annotation.Resource.class.getName(),
         javax.annotation.Resources.class.getName(),

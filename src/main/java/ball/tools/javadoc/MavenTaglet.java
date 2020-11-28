@@ -20,6 +20,7 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.CompileTimeCheck;
 import ball.util.PropertiesImpl;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
@@ -250,6 +251,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     @NoArgsConstructor @ToString
     public static class PluginHelp extends MavenTaglet {
         private static final String NAME = "plugin-help.xml";
+        @CompileTimeCheck
         private static final Pattern PATTERN =
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/"
                             + Pattern.quote(NAME));
@@ -356,6 +358,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     @TagletName("pom.coordinates")
     @NoArgsConstructor @ToString
     public static class Coordinates extends MavenTaglet {
+        @CompileTimeCheck
         private static final Pattern PATTERN =
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/pom[.]properties");
 

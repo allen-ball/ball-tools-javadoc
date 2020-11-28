@@ -134,6 +134,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         types = env.getTypeUtils();
         fm = env.getJavaFileManager();
         trees = env.getDocTrees();
+
+        if (doclet instanceof StandardDoclet) {
+        }
     }
 
     @Override

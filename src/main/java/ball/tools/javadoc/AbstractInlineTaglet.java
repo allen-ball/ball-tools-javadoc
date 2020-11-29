@@ -42,8 +42,7 @@ public abstract class AbstractInlineTaglet extends AbstractTaglet {
     public boolean isInlineTag() { return true; }
 
     @Override
-    protected Node toNode(List<? extends DocTree> tags,
-                          Element element) throws Throwable {
+    protected Node toNode(List<? extends DocTree> tags, Element element) throws Throwable {
         return toNode((UnknownInlineTagTree) tags.get(0), element);
     }
 
@@ -58,6 +57,5 @@ public abstract class AbstractInlineTaglet extends AbstractTaglet {
      *
      * @throws  Throwable       As required by the subclass.
      */
-    protected abstract Node toNode(UnknownInlineTagTree tag,
-                                   Element element) throws Throwable;
+    protected abstract Node toNode(UnknownInlineTagTree tag, Element element) throws Throwable;
 }

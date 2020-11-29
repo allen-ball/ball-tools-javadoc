@@ -162,11 +162,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      *
      * @throws  Throwable       As required by the subclass.
      */
-    protected abstract Node toNode(List<? extends DocTree> tags,
-                                   Element element) throws Throwable;
+    protected abstract Node toNode(List<? extends DocTree> tags, Element element) throws Throwable;
 
-    private FluentNode toNode(DocTree tag, Element element,
-                              Throwable throwable) {
+    private FluentNode toNode(DocTree tag, Element element, Throwable throwable) {
         String string = "@" + getName();
 
         if (isNotEmpty(getText(tag))) {

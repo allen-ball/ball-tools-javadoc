@@ -20,6 +20,7 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.swing.table.ListTableModel;
 import ball.swing.table.MapTableModel;
 import ball.xml.FluentNode;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.io.IOUtils;
@@ -46,11 +48,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @version $Revision$
  */
 @TagletName("include")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class IncludeTaglet extends AbstractInlineTaglet {
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         FluentNode node = null;
         String[] text = getText(tag).trim().split(Pattern.quote("#"), 2);
 

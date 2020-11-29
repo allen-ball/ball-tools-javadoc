@@ -20,6 +20,7 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.util.ant.taskdefs.AntTask;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
@@ -32,6 +33,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.tools.ant.ComponentHelper;
@@ -53,6 +55,7 @@ import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
  * @version $Revision$
  */
 @TagletName("ant.task")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class AntTaskTaglet extends AbstractInlineTaglet {
     private static final String NO = "no";
@@ -63,8 +66,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     private static final String DOCUMENTED = "DOCUMENTED";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         FluentNode node = null;
         TypeElement type = null;
         String name = getText(tag).trim();

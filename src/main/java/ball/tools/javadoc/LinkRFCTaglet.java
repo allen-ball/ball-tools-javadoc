@@ -20,10 +20,12 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.net.URI;
 import javax.lang.model.element.Element;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -35,6 +37,7 @@ import lombok.ToString;
  * @version $Revision$
  */
 @TagletName("link.rfc")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class LinkRFCTaglet extends AbstractInlineTaglet {
     private static final String TEXT = "RFC%d";
@@ -43,8 +46,7 @@ public class LinkRFCTaglet extends AbstractInlineTaglet {
     private static final String PATH = "/rfc/rfc%d.txt";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         FluentNode node = fragment();
         int rfc = Integer.valueOf(getText(tag).trim());
 

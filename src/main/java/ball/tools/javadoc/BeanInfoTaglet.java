@@ -20,11 +20,13 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.beans.PropertyDescriptorsTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -42,11 +44,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @version $Revision$
  */
 @TagletName("bean.info")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class BeanInfoTaglet extends AbstractInlineTaglet {
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         TypeElement type = null;
         String name = getText(tag);
 

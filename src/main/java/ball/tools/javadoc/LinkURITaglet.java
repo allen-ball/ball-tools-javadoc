@@ -20,11 +20,13 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import javax.lang.model.element.Element;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -35,13 +37,13 @@ import lombok.ToString;
  * @version $Revision$
  */
 @TagletName("link.uri")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class LinkURITaglet extends AbstractInlineTaglet {
     private static final String SPACES = "[\\p{Space}]+";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         String text = getText(tag).trim();
         String[] argv = text.split(SPACES, 2);
         URI href = new URI(argv[0]);

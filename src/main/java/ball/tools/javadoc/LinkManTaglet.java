@@ -39,10 +39,10 @@ import lombok.ToString;
  * @version $Revision$
  */
 @TagletName("link.man")
+@ServiceProviderFor({ Taglet.class })
 @PatternRegex("(?is)(?<name>.+)[(](?<section>[\\p{Alnum}]+)[)]")
 @NoArgsConstructor @ToString
-public class LinkManTaglet extends AbstractInlineTaglet
-                           implements PatternMatcherBean {
+public class LinkManTaglet extends AbstractInlineTaglet implements PatternMatcherBean {
     private String name = null;
     private String section = null;
 
@@ -53,8 +53,7 @@ public class LinkManTaglet extends AbstractInlineTaglet
     protected void setSection(String string) { section = string; }
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         PatternMatcherBean.super.initialize(getText(tag).trim());
 
         File path = new File(File.separator);

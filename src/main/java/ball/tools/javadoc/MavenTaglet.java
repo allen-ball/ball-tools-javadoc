@@ -21,6 +21,7 @@ package ball.tools.javadoc;
  * ##########################################################################
  */
 import ball.annotation.CompileTimeCheck;
+import ball.annotation.ServiceProviderFor;
 import ball.util.PropertiesImpl;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
@@ -136,13 +137,13 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      * {@code plugin.xml}.
      */
     @TagletName("maven.plugin.fields")
+    @ServiceProviderFor({ Taglet.class })
     @NoArgsConstructor @ToString
     public static class PluginFields extends MavenTaglet {
         private static final String PLUGIN_XML = "META-INF/maven/plugin.xml";
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag,
-                                 Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
             TypeElement type = null;
             String[] argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
@@ -248,6 +249,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      * help documentation.
      */
     @TagletName("maven.plugin.help")
+    @ServiceProviderFor({ Taglet.class })
     @NoArgsConstructor @ToString
     public static class PluginHelp extends MavenTaglet {
         private static final String NAME = "plugin-help.xml";
@@ -257,8 +259,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                             + Pattern.quote(NAME));
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag,
-                                 Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
             Class<?> type = null;
 
             if (element instanceof PackageElement) {
@@ -356,6 +357,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      * {@pom.coordinates}
      */
     @TagletName("pom.coordinates")
+    @ServiceProviderFor({ Taglet.class })
     @NoArgsConstructor @ToString
     public static class Coordinates extends MavenTaglet {
         @CompileTimeCheck
@@ -363,8 +365,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/pom[.]properties");
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag,
-                                 Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
             POMProperties properties = new POMProperties();
             Class<?> type = null;
 

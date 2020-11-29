@@ -20,6 +20,7 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.ServiceProviderFor;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import java.lang.annotation.Annotation;
@@ -30,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -43,6 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * @version $Revision$
  */
 @TagletName("injected.fields")
+@ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 public class InjectedFieldsTaglet extends AbstractInlineTaglet {
     private static final String[] NAMES = new String[] {
@@ -56,8 +59,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
     };
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag,
-                             Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         TypeElement type = null;
         String[] argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 

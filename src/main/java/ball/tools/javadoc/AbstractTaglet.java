@@ -98,6 +98,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     private Doclet doclet = null;
     /** See {@link DocletEnvironment#getDocTrees()}. */
     protected DocTrees trees = null;
+    private Extern extern = null;
     private transient ClassLoader loader = null;
     private transient Method dispatcher = null;
 
@@ -134,9 +135,6 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         types = env.getTypeUtils();
         fm = env.getJavaFileManager();
         trees = env.getDocTrees();
-
-        if (doclet instanceof StandardDoclet) {
-        }
     }
 
     @Override
@@ -368,13 +366,15 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                     AbstractTaglet.class
                     .getDeclaredMethod(dispatcher.getName(), parameters);
 
-                if (! Objects.equals(dispatcher, method)) {
-                    Object[] arguments =
-                        Stream.of(tag, context, target)
-                        .toArray(Object[]::new);
-
-                    href = (URI) method.invoke(this, arguments);
+                if (Objects.equals(dispatcher, method)) {
+                    throw new NoSuchMethodException();
                 }
+
+                Object[] arguments =
+                    Stream.of(tag, context, target)
+                    .toArray(Object[]::new);
+
+                href = (URI) method.invoke(this, arguments);
             } catch (Exception exception) {
                 print(WARNING, tag, context,
                       "No method to get href for %s",
@@ -445,12 +445,17 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         URI href = href(tag, context, asTypeElement(target), fragment);
 
         if (href == null) {
-            href = null;
+            href = extern(tag, context).get(target);
 
             if (href != null) {
-                if (fragment != null) {
-                    href = href.resolve("#" + fragment);
-                }
+                String path = target.getCanonicalName() + ".html";
+
+                path =
+                    Stream.concat(Stream.of(getComponentsOf(target.getPackage())),
+                                  Stream.of(path))
+                    .collect(joining("/"));
+
+                href = href(href, path, fragment);
             }
         }
 
@@ -461,25 +466,72 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         URI href = null;
 
         if (target != null) {
+            String path = getCanonicalNameOf(target) + ".html";
+
+            path =
+                Stream.concat(Stream.of(getComponentsOf(elements.getPackageOf(target))),
+                              Stream.of(path))
+                .collect(joining("/"));
+
             if (env.isIncluded(target)) {
                 int depth = getComponentsOf(elements.getPackageOf(context)).length;
-                String path =
+                path =
                     Stream.concat(Stream.generate(() -> "..").limit(depth),
-                                  Stream.of(getComponentsOf(elements.getPackageOf(target))))
-                    .collect(joining("/", "./", "/"))
-                    + getCanonicalNameOf(target) + ".html";
+                                  Stream.of(path))
+                    .collect(joining("/"));
 
-                href = URI.create(path).normalize();
-            }
-        }
+                href = href(null, path, fragment);
+            } else {
+                href = extern(tag, context).get(elements.getPackageOf(target));
 
-        if (href != null) {
-            if (fragment != null) {
-                href = href.resolve("#" + fragment);
+                if (href != null) {
+                    href = href(href, path, fragment);
+                }
             }
         }
 
         return href;
+    }
+
+    private URI href(URI base, String path, String fragment) {
+        URI href = null;
+
+        if (base != null) {
+            href = base.resolve(path + "?is-external=true");
+        } else {
+            href = URI.create("./" + path);
+        }
+
+        href = href.normalize();
+
+        if (fragment != null) {
+            href = href.resolve("#" + fragment);
+        }
+
+        return href;
+    }
+
+    private Extern extern(DocTree tag, Element context) {
+        if (extern == null) {
+            /*
+             * TBD: Always fails because
+             * doclet.getClass().getClassLoader() != StandardDoclet.class.getClassLoader()
+             */
+            if (doclet instanceof StandardDoclet) {
+                extern = ((StandardDoclet) doclet).extern();
+            } else {
+                extern = new Extern();
+                print(WARNING, tag, context,
+                      "Configure '-doclet %s' for external links",
+                      StandardDoclet.class.getCanonicalName());
+            }
+        }
+
+        return extern;
+    }
+
+    private String[] getComponentsOf(Package pkg) {
+        return (pkg == null) ? new String[] { } : getComponentsOf(pkg.getName());
     }
 
     private String[] getComponentsOf(PackageElement element) {
@@ -487,7 +539,17 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     }
 
     private String[] getComponentsOf(QualifiedNameable element) {
-        return element.getQualifiedName().toString().split(Pattern.quote("."));
+        return getComponentsOf(element.getQualifiedName());
+    }
+
+    private String[] getComponentsOf(CharSequence sequence) {
+        String[] strings = new String[] { };
+
+        if (sequence != null && sequence.length() > 0) {
+            strings = sequence.toString().split(Pattern.quote("."));
+        }
+
+        return strings;
     }
 
     private String getCanonicalNameOf(TypeElement element) {

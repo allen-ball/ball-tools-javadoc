@@ -45,7 +45,7 @@
     </license>
   </licenses>
   <properties>
-    <jse.target>11</jse.target>
+    <jse.target>15</jse.target>
   </properties>
   <dependencies verbose="true">
     <dependency>

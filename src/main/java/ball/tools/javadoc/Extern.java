@@ -21,19 +21,20 @@ package ball.tools.javadoc;
  * ##########################################################################
  */
 import ball.annotation.CompileTimeCheck;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import javax.lang.model.element.PackageElement;
 import lombok.NoArgsConstructor;
 
+import static java.net.http.HttpResponse.BodyHandlers;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 
@@ -62,7 +63,8 @@ public class Extern extends TreeMap<String,URI> {
      *
      * @param   javadoc         The {@link URI} of the external Javadoc.
      */
-    public void link(URI javadoc) throws IOException {
+    public void link(URI javadoc) throws InterruptedException,
+                                         IOException {
         link(javadoc, javadoc);
     }
 
@@ -74,25 +76,39 @@ public class Extern extends TreeMap<String,URI> {
      * @param   packageList     The {@link URI} of the folder containing the
      *                          package list.
      */
-    public void link(URI javadoc, URI packageList) throws IOException {
+    public void link(URI javadoc, URI packageList) throws InterruptedException,
+                                                          IOException {
         List<String> list = null;
 
         for (String name : List.of(ELEMENT_LIST, PACKAGE_LIST)) {
-            URI uri = packageList.resolve(name);
+            var uri = packageList.resolve(name);
 
-            try (InputStream in = uri.toURL().openStream()) {
-                list =
-                    new BufferedReader(new InputStreamReader(in, UTF_8))
-                    .lines()
-                    .filter(t -> FQN.matcher(t).matches())
-                    .collect(toList());
-
-                if (! list.isEmpty()) {
+            try {
+                if (uri.getScheme().equals("file")) {
+                    list = Files.lines(Paths.get(uri), UTF_8).collect(toList());
                     break;
                 } else {
-                    throw new IOException("No packages found in " + uri);
+                    var client = HttpClient.newHttpClient();
+                    var request = HttpRequest.newBuilder().uri(uri).build();
+                    var response = client.send(request, BodyHandlers.ofLines());
+
+                    if (response.statusCode() == 200) {
+                        list =
+                            response.body()
+                            .filter(t -> FQN.matcher(t).matches())
+                            .collect(toList());
+
+                        if (! list.isEmpty()) {
+                            break;
+                        } else {
+                            throw new IOException("No packages found in " + uri);
+                        }
+                    } else {
+                        throw new IOException(String.valueOf(uri));
+                    }
                 }
             } catch (IOException exception) {
+                continue;
             }
         }
 
@@ -112,7 +128,7 @@ public class Extern extends TreeMap<String,URI> {
         } else if (key instanceof Package) {
             value = get(((Package) key).getName());
         } else if (key instanceof PackageElement) {
-            PackageElement element = (PackageElement) key;
+            var element = (PackageElement) key;
 
             if (! element.isUnnamed()) {
                 value = get(element.getQualifiedName().toString());

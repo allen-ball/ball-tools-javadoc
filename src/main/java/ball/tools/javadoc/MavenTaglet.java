@@ -28,18 +28,13 @@ import com.sun.source.doctree.UnknownInlineTagTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -103,12 +98,12 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      */
     protected File getPomFileFor(UnknownInlineTagTree tag,
                                  Element element) throws Exception {
-        String name = defaultIfBlank(getText(tag).trim(), POM_XML);
-        File parent =
+        var name = defaultIfBlank(getText(tag).trim(), POM_XML);
+        var parent =
             new File(trees.getPath(element).getCompilationUnit()
                      .getSourceFile().toUri())
             .getParentFile();
-        File file = new File(parent, name);
+        var file = new File(parent, name);
 
         while (parent != null) {
             file = new File(parent, name);
@@ -130,8 +125,8 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
     }
 
     /**
-     * Inline {@link jdk.javadoc.doclet.Taglet} to provide a report of
-     * fields whose values are configured by the
+     * Inline {@link Taglet} to provide a report of fields whose values are
+     * configured by the
      * {@link.uri https://maven.apache.org/index.html Maven}
      * {@link.uri https://maven.apache.org/plugin-developers/index.html Plugin}
      * {@code plugin.xml}.
@@ -145,7 +140,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
         @Override
         public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
             TypeElement type = null;
-            String[] argv = getText(tag).trim().split("[\\p{Space}]+", 2);
+            var argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
             if (isNotEmpty(argv[0])) {
                 type = getTypeElementFor(element, argv[0]);
@@ -153,13 +148,13 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 type = getEnclosingTypeElement(element);
             }
 
-            URL url = getResourceURLOf(asClass(type));
-            Protocol protocol = Protocol.of(url);
+            var url = getResourceURLOf(asClass(type));
+            var protocol = Protocol.of(url);
             Document document = null;
 
             switch (protocol) {
             case FILE:
-                String root =
+                var root =
                     url.getPath()
                     .replaceAll(Pattern.quote(getResourcePathOf(asClass(type))), EMPTY);
 
@@ -170,10 +165,10 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 break;
 
             case JAR:
-                JarFile jar = protocol.getJarFile(url);
-                ZipEntry entry = jar.getEntry(PLUGIN_XML);
+                var jar = protocol.getJarFile(url);
+                var entry = jar.getEntry(PLUGIN_XML);
 
-                try (InputStream in = jar.getInputStream(entry)) {
+                try (var in = jar.getInputStream(entry)) {
                     document =
                         DocumentBuilderFactory.newInstance()
                         .newDocumentBuilder()
@@ -186,7 +181,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 throw new IllegalStateException("Cannot find " + PLUGIN_XML);
             }
 
-            Node mojo =
+            var mojo =
                 (Node)
                 compile("/plugin/mojos/mojo[implementation='%s']",
                         type.getQualifiedName())
@@ -212,11 +207,11 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
         private FluentNode tr(UnknownInlineTagTree tag, Element element,
                               Class<?> type, Node mojo, Node parameter) {
-            FluentNode tr = fragment();
+            var tr = fragment();
 
             try {
-                String name = compile("name").evaluate(parameter);
-                Field field = FieldUtils.getField(type, name, true);
+                var name = compile("name").evaluate(parameter);
+                var field = FieldUtils.getField(type, name, true);
 
                 if (field != null) {
                     tr =
@@ -268,16 +263,16 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 type = asClass(getEnclosingTypeElement(element));
             }
 
-            URL url = getResourceURLOf(type);
-            Protocol protocol = Protocol.of(url);
+            var url = getResourceURLOf(type);
+            var protocol = Protocol.of(url);
             Document document = null;
 
             switch (protocol) {
             case FILE:
-                Path root =
+                var root =
                     Paths.get(url.getPath()
                               .replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY));
-                Path path =
+                var path =
                     Files.walk(root, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
                     .filter(t -> PATTERN.matcher(root.relativize(t).toString()).matches())
@@ -290,13 +285,13 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 break;
 
             case JAR:
-                try (JarFile jar = protocol.getJarFile(url)) {
-                    JarEntry entry =
+                try (var jar = protocol.getJarFile(url)) {
+                    var entry =
                         jar.stream()
                         .filter(t -> PATTERN.matcher(t.getName()).matches())
                         .findFirst().orElse(null);
 
-                    try (InputStream in = jar.getInputStream(entry)) {
+                    try (var in = jar.getInputStream(entry)) {
                         document =
                             DocumentBuilderFactory.newInstance()
                             .newDocumentBuilder()
@@ -327,7 +322,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
         private FluentNode tr(UnknownInlineTagTree tag, Element element,
                               Node mojo) {
-            FluentNode tr = fragment();
+            var tr = fragment();
 
             try {
                 tr =
@@ -366,7 +361,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
         @Override
         public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
-            POMProperties properties = new POMProperties();
+            var properties = new POMProperties();
             Class<?> type = null;
 
             if (element instanceof PackageElement) {
@@ -375,12 +370,12 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 type = asClass(getEnclosingTypeElement(element));
             }
 
-            URL url = getResourceURLOf(type);
-            Protocol protocol = Protocol.of(url);
+            var url = getResourceURLOf(type);
+            var protocol = Protocol.of(url);
 
             switch (protocol) {
             case FILE:
-                Document document =
+                var document =
                     DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder()
                     .parse(getPomFileFor(tag, element));
@@ -392,14 +387,14 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 break;
 
             case JAR:
-                try (JarFile jar = protocol.getJarFile(url)) {
-                    JarEntry entry =
+                try (var jar = protocol.getJarFile(url)) {
+                    var entry =
                         jar.stream()
                         .filter(t -> PATTERN.matcher(t.getName()).matches())
                         .findFirst().orElse(null);
 
                     if (entry != null) {
-                        try (InputStream in = jar.getInputStream(entry)) {
+                        try (var in = jar.getInputStream(entry)) {
                             properties.load(in);
                         }
                     }

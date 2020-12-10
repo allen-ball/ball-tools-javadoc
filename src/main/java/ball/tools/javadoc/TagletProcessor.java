@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
@@ -66,8 +65,8 @@ public class TagletProcessor extends AnnotatedNoAnnotationProcessor {
 
     @Override
     protected void process(RoundEnvironment roundEnv, Element element) {
-        TypeElement type = (TypeElement) element;
-        ExecutableElement method = getMethod(type, PROTOTYPE);
+        var type = (TypeElement) element;
+        var method = getMethod(type, PROTOTYPE);
 
         if (! (method != null
                && method.getModifiers().containsAll(getModifiers(PROTOTYPE)))) {

@@ -25,11 +25,9 @@ import ball.swing.table.ListTableModel;
 import ball.swing.table.MapTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import jdk.javadoc.doclet.Taglet;
@@ -37,12 +35,12 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.io.IOUtils;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
- * Inline {@link jdk.javadoc.doclet.Taglet} to include a static
- * {@link Class} {@link java.lang.reflect.Field} or resource in the Javadoc
- * output.
+ * Inline {@link Taglet} to include a static {@link Class}
+ * {@link java.lang.reflect.Field} or resource in the Javadoc output.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
@@ -54,7 +52,7 @@ public class IncludeTaglet extends AbstractInlineTaglet {
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         FluentNode node = null;
-        String[] text = getText(tag).trim().split(Pattern.quote("#"), 2);
+        var text = getText(tag).trim().split(Pattern.quote("#"), 2);
 
         if (text.length > 1) {
             node =
@@ -88,7 +86,7 @@ public class IncludeTaglet extends AbstractInlineTaglet {
                 table(tag, element,
                       new ListTableModel(((Collection<?>) object)
                                          .stream()
-                                         .collect(Collectors.toList()),
+                                         .collect(toList()),
                                          "Element"));
         } else if (object instanceof Map<?,?>) {
             node =
@@ -109,7 +107,7 @@ public class IncludeTaglet extends AbstractInlineTaglet {
             type = getClass();
         }
 
-        try (InputStream in = type.getResourceAsStream(name)) {
+        try (var in = type.getResourceAsStream(name)) {
             string = IOUtils.toString(in, "UTF-8");
         }
 

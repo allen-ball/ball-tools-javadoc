@@ -56,7 +56,7 @@ public class LinkManTaglet extends AbstractInlineTaglet implements PatternMatche
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         PatternMatcherBean.super.initialize(getText(tag).trim());
 
-        File path = new File(File.separator);
+        var path = new File(File.separator);
 
         path = new File(path, "usr");
         path = new File(path, "share");

@@ -44,19 +44,19 @@ public class LinkURITaglet extends AbstractInlineTaglet {
 
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
-        String text = getText(tag).trim();
-        String[] argv = text.split(SPACES, 2);
-        URI href = new URI(argv[0]);
+        var text = getText(tag).trim();
+        var argv = text.split(SPACES, 2);
+        var href = new URI(argv[0]);
 
         text = (argv.length > 1) ? argv[1] : null;
 
-        LinkedHashMap<String,String> map = new LinkedHashMap<>();
+        var map = new LinkedHashMap<String,String>();
 
         if (text != null) {
             for (;;) {
                 argv = text.split(SPACES, 2);
 
-                String[] nvp = argv[0].split("=", 2);
+                var nvp = argv[0].split("=", 2);
 
                 if (argv.length > 1 && nvp.length > 1) {
                     map.put(nvp[0], nvp[1]);

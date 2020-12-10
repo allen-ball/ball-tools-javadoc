@@ -36,16 +36,16 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.swing.table.TableModel;
-import jdk.javadoc.doclet.Taglet;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Node;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -199,8 +199,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Element element,
-                                          Member member) {
+    public default FluentNode declaration(DocTree tag, Element element, Member member) {
         FluentNode node = null;
 
         if (member instanceof Field) {
@@ -224,8 +223,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Element element,
-                                          Field field) {
+    public default FluentNode declaration(DocTree tag, Element element, Field field) {
         return fragment(modifiers(field.getModifiers()),
                         type(tag, element, field.getGenericType()),
                         code(SPACE),
@@ -242,15 +240,13 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Element element,
-                                          Method method) {
-        FluentNode node =
+    public default FluentNode declaration(DocTree tag, Element element, Method method) {
+        var node =
             fragment(modifiers(method.getModifiers()),
                      type(tag, element, method.getGenericReturnType()),
                      code(SPACE),
                      a(tag, element, method, (String) null));
-
-        Parameter[] parameters = method.getParameters();
+        var parameters = method.getParameters();
 
         node.add(code("("));
 
@@ -277,8 +273,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
-    public default FluentNode declaration(DocTree tag, Element element,
-                                          Parameter parameter) {
+    public default FluentNode declaration(DocTree tag, Element element, Parameter parameter) {
         return fragment(modifiers(parameter.getModifiers()),
                         type(tag, element, parameter.getParameterizedType()),
                         code(SPACE),
@@ -303,10 +298,9 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode annotation(DocTree tag, Element element,
-                                         Annotation annotation) {
-        Class<?> type = annotation.annotationType();
-        String string =
+    public default FluentNode annotation(DocTree tag, Element element, Annotation annotation) {
+        var type = annotation.annotationType();
+        var string =
             String.valueOf(annotation)
             .replace(type.getCanonicalName(), type.getSimpleName());
 
@@ -321,8 +315,8 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
     public default FluentNode modifiers(int modifiers) {
-        FluentNode node = fragment();
-        String string = Modifier.toString(modifiers);
+        var node = fragment();
+        var string = Modifier.toString(modifiers);
 
         if (isNotEmpty(string)) {
             node.add(code(string + SPACE));
@@ -347,7 +341,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
             node =
                 fragment(type(tag, element, ((ParameterizedType) type).getRawType()));
 
-            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+            var types = ((ParameterizedType) type).getActualTypeArguments();
 
             node = node.add(code("<"));
 
@@ -402,8 +396,8 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      */
     public default FluentNode table(DocTree tag, Element element,
                                     TableModel model, Node... nodes) {
-        FluentNode table = table();
-        String[] names =
+        var table = table();
+        var names =
             IntStream.range(0, model.getColumnCount())
             .boxed()
             .map(model::getColumnName)
@@ -440,7 +434,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
             node =
                 text(Stream.of(ArrayUtils.toObject((byte[]) object))
                      .map (t -> String.format("0x%02X", t))
-                     .collect(Collectors.joining(", ", "[", "]")));
+                     .collect(joining(", ", "[", "]")));
         } else if (object instanceof boolean[]) {
             node = text(Arrays.toString((boolean[]) object));
         } else if (object instanceof double[]) {
@@ -468,7 +462,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
                 ((Collection<?>) object)
                 .stream()
                 .map(t -> toHTML(tag, element, t))
-                .collect(Collectors.toList());
+                .collect(toList());
 
             for (int i = nodes.size() - 1; i > 0; i -= 1) {
                 nodes.add(i, text(", "));

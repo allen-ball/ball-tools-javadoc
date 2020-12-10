@@ -21,7 +21,6 @@ package ball.tools.javadoc;
  * ##########################################################################
  */
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 import jdk.javadoc.doclet.Taglet;
 
@@ -40,11 +39,9 @@ public interface AnnotatedTaglet extends Taglet {
 
     @Override
     default Set<Taglet.Location> getAllowedLocations() {
-        AllowedLocations annotation =
-            getClass().getAnnotation(AllowedLocations.class);
-        Taglet.Location[] array =
-            (annotation != null) ? annotation.value() : Taglet.Location.values();
+        var annotation = getClass().getAnnotation(AllowedLocations.class);
+        var array = (annotation != null) ? annotation.value() : Taglet.Location.values();
 
-        return EnumSet.copyOf(List.of(array));
+        return EnumSet.copyOf(Set.of(array));
     }
 }

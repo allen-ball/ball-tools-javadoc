@@ -29,8 +29,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.Taglet;
@@ -43,8 +41,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * {@link java.lang.annotation.Annotation} to mark {@link Taglet}s with
- * their
- * {@link Taglet#getAllowedLocations() allowed locations}.
+ * their {@link Taglet#getAllowedLocations() allowed locations}.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
@@ -68,8 +65,8 @@ public @interface AllowedLocations {
                                TypeElement annotation, Element element) {
             super.process(roundEnv, annotation, element);
 
-            AnnotationMirror mirror = getAnnotationMirror(element, annotation);
-            AnnotationValue value = getAnnotationValue(mirror, "value");
+            var mirror = getAnnotationMirror(element, annotation);
+            var value = getAnnotationValue(mirror, "value");
 
             if (isEmptyArray(value)) {
                 print(ERROR, element, mirror, value, "value() is empty");

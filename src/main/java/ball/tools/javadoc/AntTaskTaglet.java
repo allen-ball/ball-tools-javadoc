@@ -24,13 +24,12 @@ import ball.annotation.ServiceProviderFor;
 import ball.util.ant.taskdefs.AntTask;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
-import java.net.URL;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import jdk.javadoc.doclet.Taglet;
@@ -43,13 +42,14 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Antlib;
 import org.w3c.dom.Node;
 
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
 
 /**
- * Inline {@link jdk.javadoc.doclet.Taglet} to document
- * {@link.uri http://ant.apache.org/ Ant} {@link Task}s.
+ * Inline {@link Taglet} to document {@link.uri http://ant.apache.org/ Ant}
+ * {@link Task}s.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
@@ -69,7 +69,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         FluentNode node = null;
         TypeElement type = null;
-        String name = getText(tag).trim();
+        var name = getText(tag).trim();
 
         if (isNotEmpty(name)) {
             type = getTypeElementFor(element, name);
@@ -83,7 +83,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
                                                + Task.class.getCanonicalName());
         }
 
-        String template =
+        var template =
             render(template(tag, asClass(type)), INDENTATION.length())
             .replaceAll(Pattern.quote(DOCUMENTED + "=\"\""), "...");
 
@@ -94,11 +94,11 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
         String name = null;
 
         if (name == null) {
-            Project project = new Project();
-            String pkg = type.getPackage().getName();
+            var project = new Project();
+            var pkg = type.getPackage().getName();
 
             while (pkg != null) {
-                URL url =
+                var url =
                     type.getResource("/"
                                      + String.join("/", pkg.split(Pattern.quote(".")))
                                      + "/antlib.xml");
@@ -121,8 +121,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
                 }
             }
 
-            ComponentHelper helper =
-                ComponentHelper.getComponentHelper(project);
+            var helper = ComponentHelper.getComponentHelper(project);
 
             name =
                 helper.getTaskDefinitions().entrySet()
@@ -133,7 +132,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
         }
 
         if (name == null) {
-            AntTask annotation = type.getAnnotation(AntTask.class);
+            var annotation = type.getAnnotation(AntTask.class);
 
             name = (annotation != null) ? annotation.value() : null;
         }
@@ -148,9 +147,8 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     private FluentNode type(int depth, Set<Map.Entry<?,?>> set,
                             UnknownInlineTagTree tag,
                             Map.Entry<String,Class<?>> entry) {
-        IntrospectionHelper helper =
-            IntrospectionHelper.getHelper(entry.getValue());
-        FluentNode node = element(entry.getKey());
+        var helper = IntrospectionHelper.getHelper(entry.getValue());
+        var node = element(entry.getKey());
 
         if (set.add(entry)
             && (! entry.getValue().getName()
@@ -160,11 +158,13 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
                 .add(content(depth + 1, set, tag, helper));
 
             if (helper.supportsCharacters()) {
-                String content = "... text ...";
+                var content = "... text ...";
 
                 if (node.hasChildNodes()) {
                     content =
-                        "\n" + repeat(INDENTATION, depth + 1) + content + "\n";
+                        Stream.generate(() -> INDENTATION)
+                        .limit(depth + 1)
+                        .collect(joining(EMPTY, "\n", content + "\n"));
                 }
 
                 node.add(text(content));
@@ -178,7 +178,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
 
     private Node[] attributes(UnknownInlineTagTree tag,
                               IntrospectionHelper helper) {
-        Node[] array =
+        var array =
             helper.getAttributeMap().entrySet()
             .stream()
             .map(t -> attr(t.getKey(), t.getValue().getSimpleName()))

@@ -50,7 +50,7 @@ public class BeanInfoTaglet extends AbstractInlineTaglet {
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         TypeElement type = null;
-        String name = getText(tag);
+        var name = getText(tag);
 
         if (isNotEmpty(name)) {
             type = getTypeElementFor(element, name);
@@ -58,7 +58,7 @@ public class BeanInfoTaglet extends AbstractInlineTaglet {
             type = getEnclosingTypeElement(element);
         }
 
-        PropertyDescriptorsTableModel model =
+        var model =
             new PropertyDescriptorsTableModel(getBeanInfo(asClass(type))
                                               .getPropertyDescriptors());
 

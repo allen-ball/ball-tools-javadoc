@@ -29,8 +29,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import lombok.NoArgsConstructor;
@@ -40,7 +38,6 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.tools.Diagnostic.Kind.ERROR;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * {@link java.lang.annotation.Annotation} to mark
@@ -68,9 +65,9 @@ public @interface TagletName {
                                TypeElement annotation, Element element) {
             super.process(roundEnv, annotation, element);
 
-            AnnotationMirror mirror = getAnnotationMirror(element, annotation);
-            AnnotationValue value = getAnnotationValue(mirror, "value");
-            String name = (String) value.getValue();
+            var mirror = getAnnotationMirror(element, annotation);
+            var value = getAnnotationValue(mirror, "value");
+            var name = (String) value.getValue();
 
             if (! name.isEmpty()) {
                 if (element.getModifiers().contains(ABSTRACT)) {

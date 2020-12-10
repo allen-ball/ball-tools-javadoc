@@ -61,7 +61,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
         TypeElement type = null;
-        String[] argv = getText(tag).trim().split("[\\p{Space}]+", 2);
+        var argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
         if (isNotEmpty(argv[0])) {
             type = getTypeElementFor(element, argv[0]);
@@ -82,7 +82,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
             }
 
             if (annotation != null) {
-                Retention retention = annotation.getAnnotation(Retention.class);
+                var retention = annotation.getAnnotation(Retention.class);
 
                 if (retention == null) {
                     throw new IllegalStateException(annotation.getCanonicalName()

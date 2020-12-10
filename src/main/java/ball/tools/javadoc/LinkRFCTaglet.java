@@ -30,8 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * Inline {@link jdk.javadoc.doclet.Taglet} providing links to external
- * RFCs.
+ * Inline {@link Taglet} providing links to external RFCs.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
  * @version $Revision$
@@ -47,10 +46,8 @@ public class LinkRFCTaglet extends AbstractInlineTaglet {
 
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
-        FluentNode node = fragment();
         int rfc = Integer.valueOf(getText(tag).trim());
-
-        node =
+        var node =
             a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null),
               String.format(TEXT, rfc))
             .add(attr("target", "newtab"));

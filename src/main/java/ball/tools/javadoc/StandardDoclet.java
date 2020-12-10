@@ -22,8 +22,6 @@ package ball.tools.javadoc;
  */
 import ball.lang.reflect.InterceptingInvocationHandler;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +63,7 @@ public class StandardDoclet extends jdk.javadoc.doclet.StandardDoclet {
 
     @Override
     public Set<Option> getSupportedOptions() {
-        Set<Option> set =
+        var set =
             super.getSupportedOptions()
             .stream()
             .map(OptionWrapper::new)
@@ -77,12 +75,12 @@ public class StandardDoclet extends jdk.javadoc.doclet.StandardDoclet {
 
     @Override
     public boolean run(DocletEnvironment docEnv) {
-        for (URI key : links.keySet()) {
-            URI value = links.computeIfAbsent(key, k -> key);
+        for (var key : links.keySet()) {
+            var value = links.get(key);
 
             try {
-                extern.link(key, value);
-            } catch (IOException exception) {
+                extern.link(key, (value != null) ? value : key);
+            } catch (Exception exception) {
                 print(WARNING, "%s", exception.getMessage());
             }
         }

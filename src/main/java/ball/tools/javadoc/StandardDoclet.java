@@ -26,14 +26,17 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.tools.Diagnostic;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
+import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
@@ -50,6 +53,7 @@ public class StandardDoclet extends jdk.javadoc.doclet.StandardDoclet {
     private final Extern extern = new Extern();
     private Locale locale = null;
     private Reporter reporter = null;
+    private List<Taglet> taglets = null;
 
     protected Extern extern() { return extern; }
 
@@ -57,6 +61,12 @@ public class StandardDoclet extends jdk.javadoc.doclet.StandardDoclet {
     public void init(Locale locale, Reporter reporter) {
         this.locale = locale;
         this.reporter = reporter;
+
+        this.taglets =
+            ServiceLoader.load(Taglet.class, getClass().getClassLoader())
+            .stream()
+            .map(ServiceLoader.Provider::get)
+            .collect(toList());
 
         super.init(locale, reporter);
     }
@@ -75,6 +85,8 @@ public class StandardDoclet extends jdk.javadoc.doclet.StandardDoclet {
 
     @Override
     public boolean run(DocletEnvironment docEnv) {
+        taglets.stream().forEach(t -> t.init(docEnv, this));
+
         for (var key : links.keySet()) {
             var value = links.get(key);
 

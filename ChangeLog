@@ -1,3 +1,9 @@
+2020-12-11  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/StandardDoclet.java:
+	Interim check-in: Load Taglet services from the same ClassLoader
+	used to load StandardDoclet.
+
 2020-12-10  Allen D. Ball  <ball@hcf.dev>
 
 	* src/main/java/ball/tools/javadoc/Extern.java: Initial writing.
@@ -9,10 +15,6 @@
 	* src/main/java/ball/tools/javadoc/AbstractTaglet.java;
 	Interim check-in: Use Extern to construct external javadoc links
 	(currently fails due to ClassLoader issues).
-
-	* src/main/java/ball/tools/javadoc/StandardDoclet.java:
-	Interim check-in: Configure Extern by intercepting "-link" and
-	"-linkoffline" Option.process() method calls.
 
 2020-11-24  Allen D. Ball  <ball@hcf.dev>
 

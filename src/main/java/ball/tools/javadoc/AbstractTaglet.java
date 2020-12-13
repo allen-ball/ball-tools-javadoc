@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -93,7 +94,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     private Doclet doclet = null;
     /** See {@link DocletEnvironment#getDocTrees()}. */
     protected DocTrees trees = null;
-    private Extern extern = null;
+    private Map<String,URI> extern = null;
     private transient ClassLoader loader = null;
     private transient Method dispatcher = null;
 
@@ -503,15 +504,19 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         return href;
     }
 
-    private Extern extern(DocTree tag, Element context) {
+    @SuppressWarnings({ "unchecked" })
+    private Map<String,URI> extern(DocTree tag, Element context) {
         if (extern == null) {
-            /*
-             * TBD: Always fails because
-             * doclet.getClass().getClassLoader() != StandardDoclet.class.getClassLoader()
-             */
-            if (doclet instanceof StandardDoclet) {
-                extern = ((StandardDoclet) doclet).extern();
-            } else {
+            try {
+                /*
+                 * The Javadoc tool creates each Doclet and Taglet class in
+                 * a different ClassLoader necessitating access by
+                 * reflection look-up.
+                 */
+                extern =
+                    (Map<String,URI>)
+                    doclet.getClass().getField("extern").get(doclet);
+            } catch (Exception exception) {
                 extern = new Extern();
                 print(WARNING, tag, context,
                       "Configure '-doclet %s' for external links",

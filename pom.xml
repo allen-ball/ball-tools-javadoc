@@ -27,7 +27,7 @@
   <name>JDK11+ Javadoc Taglets</name>
   <description></description>
   <groupId>ball</groupId>
-  <artifactId>ball-javadoc-taglets</artifactId>
+  <artifactId>ball-tools-javadoc</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>

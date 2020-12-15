@@ -20,7 +20,6 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
-import ball.annotation.CompileTimeCheck;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.regex.Pattern;
 import javax.lang.model.element.PackageElement;
 import lombok.NoArgsConstructor;
 
@@ -51,11 +49,7 @@ public class Extern extends TreeMap<String,URI> {
     private static final String ELEMENT_LIST = "element-list";
     private static final String PACKAGE_LIST = "package-list";
 
-    private static final String SN =
-        "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
-    @CompileTimeCheck
-    private static final Pattern FQN =
-        Pattern.compile(SN + "(" + Pattern.quote(".") + SN + ")*");
+    private static final String MODULE_PREFIX = "module:";
 
     /**
      * Method to configure an external Javadoc document for linking.
@@ -93,10 +87,7 @@ public class Extern extends TreeMap<String,URI> {
                     var response = client.send(request, BodyHandlers.ofLines());
 
                     if (response.statusCode() == 200) {
-                        list =
-                            response.body()
-                            .filter(t -> FQN.matcher(t).matches())
-                            .collect(toList());
+                        list = response.body().collect(toList());
 
                         if (! list.isEmpty()) {
                             break;
@@ -113,7 +104,18 @@ public class Extern extends TreeMap<String,URI> {
         }
 
         if (! (list == null || list.isEmpty())) {
-            list.stream().forEach(t -> computeIfAbsent(t, k -> javadoc));
+            var value = javadoc;
+
+            for (var key : list) {
+                if (key.startsWith(MODULE_PREFIX)) {
+                    value =
+                        javadoc
+                        .resolve(key.substring(MODULE_PREFIX.length()) + "/")
+                        .normalize();
+                } else {
+                    putIfAbsent(key, value);
+                }
+            }
         } else {
             throw new IOException("Cannot get package list from " + packageList);
         }

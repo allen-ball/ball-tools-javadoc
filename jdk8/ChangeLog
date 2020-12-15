@@ -1,0 +1,255 @@
+2020-11-23  Allen D. Ball  <ball@hcf.dev>
+
+	* pom.xml: Started development of 3.0-SNAPSHOT.
+
+2020-09-03  Allen D. Ball  <ball@hcf.dev>
+
+	* pom.xml: Released version 2.0.0.
+
+2020-08-27  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Extend JavaxLangModelUtilities and re-implement getClassLoader().
+
+2020-08-26  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Implement getClassLoader(): Use the CLASS_PATH specified by the
+	DocumentationTool JavaFileManager.
+
+2020-08-24  Allen D. Ball  <ball@hcf.dev>
+
+	* Construct a shaded JAR that can be scanned by the
+	maven-javadoc-plugin for Taglets.
+
+2020-08-16  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Implement href(Tag,Object) (dispatch to private methods through
+	reflection).
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Require href(Tag,Object) is implemented.
+
+2020-07-22  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/InjectedFieldsTaglet.java:
+	Include org.springframework.boot.web.server.LocalServerPort.
+
+2020-07-15  Allen D. Ball  <ball@hcf.dev>
+
+	* pom.xml: Released version 1.0.0.
+
+2020-07-14  Allen D. Ball  <ball@hcf.dev>
+
+	* Seperated from ball-util.
+
+2020-05-24  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Implemented {@maven.plugin.help} (PluginHelp).
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Made look-ups of ClassDoc in PackageDoc contexts more robust.
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Added a(Tag,ProgramElementDoc,Node) to interface.
+
+2020-05-23  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	(maven.plugin.fields) Document all parameters.
+
+2020-02-05  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Renamed {@maven.plugin} to {@maven.plugin.fields}.
+
+2020-01-29  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Added {@maven.plugin}.
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Added getResourcePathOf(Class<?>) and getResourceURLOf(Class<?>)
+	methods.
+
+2020-01-27  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/InjectedFieldsTaglet.java:
+	Do not process Annotations that do not have
+	RetentionPolicy.RUNTIME.
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	In toString(Tag) method, re-throw Error.
+
+2020-01-21  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Removed interfaces with Iterable parameters.
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Added getClassFor(PackageDoc) method.
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Parse pom.xml as a Document instead of attempting to create a
+	MavenProject.
+
+2020-01-17  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	({@pom.coordinates}) Robustly search for pom.properties.
+
+2020-01-15  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Read JAR META-INF/maven/{groupId}/{artifactId}/pom.properties if
+	pom.xml is not available.
+
+2020-01-09  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	In toHTML(Tag,Object), use type(Tag,Type) instead of
+	a(Tag,Class<?>).
+
+2019-10-30  Allen D. Ball  <ball@hcf.dev>
+
+	* Replaced AbstractTaglet.a(Tag,Annotation,Node) with
+	JavadocHTMLTemplates.annotation(Tag,Annotation).
+
+2019-10-18  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java,
+	src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Added a(Tag,Annotation,Node) and a(Tag,Annotation,String)
+	methods.
+
+2019-09-30  Allen D. Ball  <ball@hcf.dev>
+
+	* src/main/java/ball/tools/javadoc/InjectedFieldsTaglet.java:
+	Added Plexus annotations.
+
+2019-06-03  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AntTaskTaglet.java:
+	Search for and parse antlib.xml to find task names.
+
+2019-05-11  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/InjectedFieldsTaglet.java,
+	src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Render <thead/> and <tbody/> elements as required.
+
+2019-05-08  Allen D. Ball  <ball@sol.local>
+
+ 	* src/main/java/ball/tools/javadoc/AbstractTaglet.java,
+	src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Support creating hyperlinks to all ProgramElementDoc subclasses.
+
+2019-05-07  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Provide a(Tag,Member,Node) method.
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Added declaration(Tag,Member), declaration(Tag,Parameter), and
+	related templates.
+
+2019-04-19  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/LinkURITaglet.java:
+	Avoid NPE if no <a/> text is specified.
+
+2019-02-23  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AntTaskTaglet.java:
+	Initial writing.
+
+	* src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Added table(Tag,TableModel,Node...) method.
+
+2019-02-17  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/InjectedFieldsTaglet.java:
+	Initial writing.
+
+2019-02-10  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Replace protected static DOCUMENT and TRANSFORMER fields with
+	document() and transformer() methods.
+
+2019-01-07  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AnnotatedTaglet.java,
+	src/main/java/ball/annotation/processing/AnnotatedTagletProcessor.java:
+	Initial writing.
+
+2019-01-02  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/SunToolsInternalToolkitTaglet.java:
+	Re-factored Taglet implementations to always implement
+	com.sun.tools.doclets.Taglet by extending AbstractTaglet and
+	implement com.sun.tools.doclets.internal.toolkit.taglets.Taglet by
+	implementing SunToolsInternalToolkitTaglet.
+
+	* src/main/java/ball/annotation/processing/TagletProcessor.java:
+	Initial writing.
+
+2018-03-17  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/IncludeTaglet.java:
+	Support implicit containing class reference and String resources.
+
+2018-03-11  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Leverage pom.properties if version can't be determined by parsing
+	project pom.xml.
+
+2018-03-10  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/MavenTaglet.java:
+	Renamed POMTaglet to MavenTaglet; renamed {@pom.dependency} to
+	{@pom.coordinates}.
+
+2018-03-04  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/IncludeTaglet.java:
+	Combined {@include.collection} and {@include.map} into {@include}
+	Taglet.
+
+2017-12-24  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/IncludeCollectionTaglet.java:
+	Initial writing.
+
+2017-10-21  Allen D. Ball  <ball@sol>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Added getEnumDocLink(Doc,Enum<?>) method.
+
+2017-09-16  Allen D. Ball  <ball@sol>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Correctly calculate relative HREF paths for inner classes.
+
+2017-09-15  Allen D. Ball  <ball@sol>
+
+	* src/main/java/ball/tools/javadoc/IncludeMapTaglet.java:
+	Render Class values as javadoc links.
+
+2017-04-15  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
+	Specify Transformer output index width.
+
+	* src/main/java/ball/tools/javadoc/POMTaglet.java:
+	Renamed {@pom.coordinates} to {@pom.dependency}.
+	Implement getModelFor(Tag) method.
+
+2016-06-04  Allen D. Ball  <ball@sol.local>
+
+	* src/main/java/ball/tools/javadoc/:
+	Support JDK8 javadoc.
+

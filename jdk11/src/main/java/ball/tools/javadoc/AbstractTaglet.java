@@ -584,8 +584,18 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         var href = href(tag, element, target);
 
         if (node == null) {
-            var name =
-                (href != null) ? target.getSimpleName() : target.getCanonicalName();
+            var name = target.getCanonicalName();
+
+            if (href != null) {
+                name = target.getSimpleName();
+
+                var enclosing = target.getEnclosingClass();
+
+                while (enclosing != null) {
+                    name = enclosing.getSimpleName() + "." + name;
+                    enclosing = enclosing.getEnclosingClass();
+                }
+            }
 
             node = code(name + brackets);
         }

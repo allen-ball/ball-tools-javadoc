@@ -28,7 +28,7 @@
   <description></description>
   <groupId>ball</groupId>
   <artifactId>ball-tools-javadoc-parent</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <parent>
     <groupId>ball</groupId>

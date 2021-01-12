@@ -304,6 +304,10 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
             String.valueOf(annotation)
             .replace(type.getCanonicalName(), type.getSimpleName());
 
+        if (string.endsWith("()")) {
+            string = string.substring(0, string.length() - 2);
+        }
+
         return fragment().add(a(href(tag, element, type), code(string)));
     }
 

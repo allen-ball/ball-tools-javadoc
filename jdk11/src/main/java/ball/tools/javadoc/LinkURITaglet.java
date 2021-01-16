@@ -43,7 +43,7 @@ public class LinkURITaglet extends AbstractInlineTaglet {
     private static final String SPACES = "[\\p{Space}]+";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         var text = getText(tag).trim();
         var argv = text.split(SPACES, 2);
         var href = new URI(argv[0]);

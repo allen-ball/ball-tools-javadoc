@@ -50,47 +50,47 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @NoArgsConstructor @ToString
 public class IncludeTaglet extends AbstractInlineTaglet {
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         FluentNode node = null;
         var text = getText(tag).trim().split(Pattern.quote("#"), 2);
 
         if (text.length > 1) {
             node =
-                field(tag, element,
+                field(tag, context,
                       asClass(isNotEmpty(text[0])
-                                  ? getTypeElementFor(element, text[0])
-                                  : getEnclosingTypeElement(element)),
+                                  ? getTypeElementFor(context, text[0])
+                                  : getEnclosingTypeElement(context)),
                       text[1]);
         } else {
             Class<?> type = null;
 
-            if (element instanceof PackageElement) {
-                type = asPackageInfoClass((PackageElement) element);
+            if (context instanceof PackageElement) {
+                type = asPackageInfoClass((PackageElement) context);
             } else {
-                type = asClass(getEnclosingTypeElement(element));
+                type = asClass(getEnclosingTypeElement(context));
             }
 
-            node = resource(tag, element, type, text[0]);
+            node = resource(tag, context, type, text[0]);
         }
 
         return node;
     }
 
-    private FluentNode field(UnknownInlineTagTree tag, Element element,
+    private FluentNode field(UnknownInlineTagTree tag, Element context,
                              Class<?> type, String name) throws Exception {
         Object object = type.getField(name).get(null);
         FluentNode node = null;
 
         if (object instanceof Collection<?>) {
             node =
-                table(tag, element,
+                table(tag, context,
                       new ListTableModel(((Collection<?>) object)
                                          .stream()
                                          .collect(toList()),
                                          "Element"));
         } else if (object instanceof Map<?,?>) {
             node =
-                table(tag, element,
+                table(tag, context,
                       new MapTableModel((Map<?,?>) object, "Key", "Value"));
         } else {
             node = pre(String.valueOf(object));
@@ -99,7 +99,7 @@ public class IncludeTaglet extends AbstractInlineTaglet {
         return div(attr("class", "block"), node);
     }
 
-    private FluentNode resource(UnknownInlineTagTree tag, Element element,
+    private FluentNode resource(UnknownInlineTagTree tag, Element context,
                                 Class<?> type, String name) throws Exception {
         String string = null;
 

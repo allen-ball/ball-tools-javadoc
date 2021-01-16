@@ -48,14 +48,14 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @NoArgsConstructor @ToString
 public class BeanInfoTaglet extends AbstractInlineTaglet {
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         TypeElement type = null;
         var name = getText(tag);
 
         if (isNotEmpty(name)) {
-            type = getTypeElementFor(element, name);
+            type = getTypeElementFor(context, name);
         } else {
-            type = getEnclosingTypeElement(element);
+            type = getEnclosingTypeElement(context);
         }
 
         var model =
@@ -64,6 +64,6 @@ public class BeanInfoTaglet extends AbstractInlineTaglet {
 
         return div(attr("class", "summary"),
                    h3("Bean Property Summary"),
-                   table(tag, element, model));
+                   table(tag, context, model));
     }
 }

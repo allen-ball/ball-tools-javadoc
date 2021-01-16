@@ -151,16 +151,16 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * Abstract method to be overridden by subclass implementations.
      *
      * @param   tags            The list of instances of this tag.
-     * @param   element         The element to which the enclosing comment
+     * @param   context         The element to which the enclosing comment
      *                          belongs.
      *
      * @return  The {@link Node} representing the output.
      *
      * @throws  Throwable       As required by the subclass.
      */
-    protected abstract Node toNode(List<? extends DocTree> tags, Element element) throws Throwable;
+    protected abstract Node toNode(List<? extends DocTree> tags, Element context) throws Throwable;
 
-    private FluentNode toNode(DocTree tag, Element element, Throwable throwable) {
+    private FluentNode toNode(DocTree tag, Element context, Throwable throwable) {
         var string = "@" + getName();
 
         if (isNotEmpty(getText(tag))) {

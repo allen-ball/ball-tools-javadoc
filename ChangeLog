@@ -1,5 +1,9 @@
 2021-01-15  Allen D. Ball  <ball@hcf.dev>
 
+	* jdk11/src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:
+	Added declaration(DocTree,Element,VariableElement) and related
+	methods.
+
 	* src/main/java/ball/tools/javadoc/AbstractTaglet.java:
 	In href() dispatcher, check resolved Method's return-type.
 

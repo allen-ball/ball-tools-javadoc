@@ -20,6 +20,7 @@ package ball.tools.javadoc;
  * limitations under the License.
  * ##########################################################################
  */
+import ball.annotation.processing.JavaxLangModelUtilities;
 import ball.xml.FluentNode;
 import ball.xml.HTMLTemplates;
 import com.sun.source.doctree.DocTree;
@@ -28,7 +29,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+/* import java.lang.reflect.Modifier; */
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -36,10 +37,16 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.swing.table.TableModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.w3c.dom.Node;
@@ -82,6 +89,32 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      * @return  {@link org.w3c.dom.Element}
      */
     public FluentNode a(DocTree tag, Element context, TypeElement target, Node node);
+
+    /**
+     * {@code <a href="}{@link VariableElement type}{@code ">}{@link Node node}{@code </a>}
+     *
+     * @param   tag             The context {@link DocTree}.
+     * @param   context         The context {@link Element}.
+     * @param   target          The target {@link VariableElement}.
+     * @param   node            The child {@link Node} (may be
+     *                          {@code null}).
+     *
+     * @return  {@link org.w3c.dom.Element}
+     */
+    public default FluentNode a(DocTree tag, Element context, VariableElement target, Node node) {
+        var href = href(tag, context, (TypeElement) target.getEnclosingElement());
+        var name = target.getSimpleName().toString();
+
+        if (href != null) {
+            href = href.resolve("#" + name);
+        }
+
+        if (node == null) {
+            node = code(name);
+        }
+
+        return a(href, node);
+    }
 
     /**
      * {@code <a href="}{@link TypeElement type}{@code ">}{@link Node node}{@code </a>}
@@ -187,6 +220,23 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      */
     public default FluentNode a(DocTree tag, Element context, Enum<?> target) {
         return a(tag, context, target.getDeclaringClass(), target.name());
+    }
+
+    /**
+     * Method to generate a {@link Field} declaration with javadoc
+     * hyperlinks.
+     *
+     * @param   tag             The context {@link DocTree}.
+     * @param   context         The context {@link Element}.
+     * @param   field           The target {@link VariableElement}.
+     *
+     * @return  {@link org.w3c.dom.DocumentFragment}
+     */
+    public default FluentNode declaration(DocTree tag, Element context, VariableElement field) {
+        return fragment(modifiers(field.getModifiers()),
+                        type(tag, context, field.asType()),
+                        code(SPACE),
+                        a(tag, context, field, null));
     }
 
     /**
@@ -311,19 +361,94 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
     /**
      * Method to generate modifiers for {@code declaration()} methods.
      *
-     * @param   modifiers       See {@link Modifier}.
+     * @param   modifiers       The {@link Set} of {@link Modifier}s.
+     *
+     * @return  {@link org.w3c.dom.DocumentFragment}
+     */
+    public default FluentNode modifiers(Set<Modifier> modifiers) {
+        return modifiers(JavaxLangModelUtilities.toModifiers(modifiers));
+    }
+
+    /**
+     * Method to generate modifiers for {@code declaration()} methods.
+     *
+     * @param   modifiers       See {@link java.lang.reflect.Modifier}.
      *
      * @return  {@link org.w3c.dom.DocumentFragment}
      */
     public default FluentNode modifiers(int modifiers) {
         var node = fragment();
-        var string = Modifier.toString(modifiers);
+        var string = java.lang.reflect.Modifier.toString(modifiers);
 
         if (isNotEmpty(string)) {
             node.add(code(string + SPACE));
         }
 
         return node;
+    }
+
+    /**
+     * Method to generate types for {@code declaration()} methods.
+     *
+     * @param   tag             The context {@link DocTree}.
+     * @param   context         The context {@link Element}.
+     * @param   type            The target {@link TypeMirror}.
+     *
+     * @return  {@link org.w3c.dom.DocumentFragment}
+     */
+    public default FluentNode type(DocTree tag, Element context, TypeMirror type) {
+        FluentNode node = null;
+
+        if (type instanceof DeclaredType) {
+            node = type(tag, context, (DeclaredType) type);
+        } else /* if (type instanceof TypeVariable) */ {
+            node = type(tag, context, (TypeVariable) type);
+        }
+
+        return node;
+    }
+
+    /**
+     * Method to generate types for {@code declaration()} methods.
+     *
+     * @param   tag             The context {@link DocTree}.
+     * @param   context         The context {@link Element}.
+     * @param   type            The target {@link DeclaredType}.
+     *
+     * @return  {@link org.w3c.dom.DocumentFragment}
+     */
+    public default FluentNode type(DocTree tag, Element context, DeclaredType type) {
+        var node = fragment(a(tag, context, (TypeElement) type.asElement(), null));
+        var types = type.getTypeArguments();
+
+        if (! types.isEmpty()) {
+            node = node.add(code("<"));
+
+            for (int i = 0, n = types.size(); i < n; i += 1) {
+                if (i > 0) {
+                    node.add(code(","));
+                }
+
+                node.add(type(tag, context, types.get(i)));
+            }
+
+            node.add(code(">"));
+        }
+
+        return node;
+    }
+
+    /**
+     * Method to generate types for {@code declaration()} methods.
+     *
+     * @param   tag             The context {@link DocTree}.
+     * @param   context         The context {@link Element}.
+     * @param   type            The target {@link TypeVariable}.
+     *
+     * @return  {@link org.w3c.dom.DocumentFragment}
+     */
+    public default FluentNode type(DocTree tag, Element context, TypeVariable type) {
+        return a(tag, context, (TypeElement) type.asElement(), code(type.toString()));
     }
 
     /**

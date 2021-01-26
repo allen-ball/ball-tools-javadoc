@@ -60,55 +60,61 @@ public class IncludeTaglet extends AbstractInlineTaglet
     @Override
     public FluentNode toNode(Tag tag) throws Throwable {
         FluentNode node = null;
-        String[] text = tag.text().trim().split(Pattern.quote("#"), 2);
+        String[] argv = tag.text().trim().split("[\\p{Space}]+", 2);
 
-        if (text.length > 1) {
-            node =
-                field(tag,
-                      getClassFor(isNotEmpty(text[0])
-                                      ? getClassDocFor(tag, text[0])
-                                      : containingClass(tag)),
-                      text[1]);
-        } else {
-            Class<?> type = null;
+        if (isNotEmpty(argv[0])) {
+            String[] target = argv[0].trim().split(Pattern.quote("#"), 2);
 
-            if (tag.holder() instanceof PackageDoc) {
-                type = getClassFor((PackageDoc) tag.holder());
+            if (target.length > 1) {
+                node =
+                    field(tag,
+                          getClassFor(isNotEmpty(target[0])
+                                          ? getClassDocFor(tag, target[0])
+                                          : containingClass(tag)),
+                          target[1]);
             } else {
-                type = getClassFor(containingClass(tag));
-            }
+                Class<?> type = null;
 
-            node = resource(tag, type, text[0]);
+                if (tag.holder() instanceof PackageDoc) {
+                    type = getClassFor((PackageDoc) tag.holder());
+                } else {
+                    type = getClassFor(containingClass(tag));
+                }
+
+                node = resource(tag, type, target[0]);
+            }
+        } else {
+            Class<?> type = getClassFor(containingClass(tag));
+
+            node = field(tag, type, tag.holder().name());
         }
 
         return node;
     }
 
-    private FluentNode field(Tag tag,
-                             Class<?> type, String name) throws Exception {
-        Object object = type.getField(name).get(null);
+    private FluentNode field(Tag tag, Class<?> type, String name) throws Exception {
         FluentNode node = null;
+        Object value = type.getDeclaredField(name).get(null);
 
-        if (object instanceof Collection<?>) {
+        if (value instanceof Collection<?>) {
             node =
                 table(tag,
-                      new ListTableModel(((Collection<?>) object)
+                      new ListTableModel(((Collection<?>) value)
                                          .stream()
                                          .collect(Collectors.toList()),
                                          "Element"));
-        } else if (object instanceof Map<?,?>) {
+        } else if (value instanceof Map<?,?>) {
             node =
                 table(tag,
-                      new MapTableModel((Map<?,?>) object, "Key", "Value"));
+                      new MapTableModel((Map<?,?>) value, "Key", "Value"));
         } else {
-            node = pre(String.valueOf(object));
+            node = pre(String.valueOf(value));
         }
 
         return div(attr("class", "block"), node);
     }
 
-    private FluentNode resource(Tag tag,
-                                Class<?> type, String name) throws Exception {
+    private FluentNode resource(Tag tag, Class<?> type, String name) throws Exception {
         String string = null;
 
         if (type == null) {

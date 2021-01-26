@@ -25,17 +25,21 @@ import ball.swing.table.ListTableModel;
 import ball.swing.table.MapTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.io.IOUtils;
 
 import static java.util.stream.Collectors.toList;
+import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -52,48 +56,61 @@ public class IncludeTaglet extends AbstractInlineTaglet {
     @Override
     public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         FluentNode node = null;
-        var text = getText(tag).trim().split(Pattern.quote("#"), 2);
+        var argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
-        if (text.length > 1) {
-            node =
-                field(tag, context,
-                      asClass(isNotEmpty(text[0])
-                                  ? getTypeElementFor(context, text[0])
-                                  : getEnclosingTypeElement(context)),
-                      text[1]);
-        } else {
-            Class<?> type = null;
+        if (isNotEmpty(argv[0])) {
+            var target = argv[0].trim().split(Pattern.quote("#"), 2);
 
-            if (context instanceof PackageElement) {
-                type = asPackageInfoClass((PackageElement) context);
+            if (target.length > 1) {
+                var type =
+                    isNotEmpty(target[0])
+                        ? getTypeElementFor(context, target[0])
+                        : getEnclosingTypeElement(context);
+                var field =
+                    fieldsIn(type.getEnclosedElements())
+                    .stream()
+                    .filter(t -> t.getSimpleName().contentEquals(target[1]))
+                    .findFirst().get();
+
+                node = field(tag, context, field);
             } else {
-                type = asClass(getEnclosingTypeElement(context));
-            }
+                var type =
+                    (context instanceof PackageElement)
+                        ? asPackageInfoClass((PackageElement) context)
+                        : asClass(getEnclosingTypeElement(context));
 
-            node = resource(tag, context, type, text[0]);
+                node = resource(tag, context, type, target[0]);
+            }
+        } else {
+            node = field(tag, context, (VariableElement) context);
         }
 
         return node;
     }
 
     private FluentNode field(UnknownInlineTagTree tag, Element context,
-                             Class<?> type, String name) throws Exception {
-        Object object = type.getField(name).get(null);
+                             VariableElement element) throws Exception {
         FluentNode node = null;
+        var type = asClass((TypeElement) element.getEnclosingElement());
+        var field = type.getDeclaredField(element.getSimpleName().toString());
 
-        if (object instanceof Collection<?>) {
+        field.setAccessible(true);
+
+        var value = field.get(null);
+
+        if (value instanceof Collection<?>) {
             node =
                 table(tag, context,
-                      new ListTableModel(((Collection<?>) object)
+                      new ListTableModel(((Collection<?>) value)
                                          .stream()
                                          .collect(toList()),
                                          "Element"));
-        } else if (object instanceof Map<?,?>) {
+        } else if (value instanceof Map<?,?>) {
             node =
                 table(tag, context,
-                      new MapTableModel((Map<?,?>) object, "Key", "Value"));
+                      new MapTableModel((Map<?,?>) value, "Key", "Value"));
         } else {
-            node = pre(String.valueOf(object));
+            node = pre(String.valueOf(value));
         }
 
         return div(attr("class", "block"), node);

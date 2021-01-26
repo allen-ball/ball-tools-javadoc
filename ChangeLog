@@ -1,3 +1,9 @@
+2021-01-25  Allen D. Ball  <ball@hcf.dev>
+
+	* IncludeTaglet.java (JDK 8 & 11):
+	Infer commented field element if no field or resource is
+	explicitly named.
+
 2021-01-15  Allen D. Ball  <ball@hcf.dev>
 
 	* jdk11/src/main/java/ball/tools/javadoc/JavadocHTMLTemplates.java:

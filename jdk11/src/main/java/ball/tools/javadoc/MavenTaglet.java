@@ -90,17 +90,17 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      * Method to locate the POM from an {@link Element}.
      *
      * @param   tag             The {@link UnknownInlineTagTree}.
-     * @param   element         The {@link Element}.
+     * @param   context         The element to which the enclosing comment
+     *                          belongs.
      *
      * @return  The POM {@link File}.
      *
      * @throws  Exception       If the POM {@link File} cannot be found.
      */
-    protected File getPomFileFor(UnknownInlineTagTree tag,
-                                 Element element) throws Exception {
+    protected File getPomFileFor(UnknownInlineTagTree tag, Element context) throws Exception {
         var name = defaultIfBlank(getText(tag).trim(), POM_XML);
         var parent =
-            new File(trees.getPath(element).getCompilationUnit()
+            new File(trees.getPath(context).getCompilationUnit()
                      .getSourceFile().toUri())
             .getParentFile();
         var file = new File(parent, name);
@@ -138,14 +138,14 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
         private static final String PLUGIN_XML = "META-INF/maven/plugin.xml";
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
             TypeElement type = null;
             var argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
             if (isNotEmpty(argv[0])) {
-                type = getTypeElementFor(element, argv[0]);
+                type = getTypeElementFor(context, argv[0]);
             } else {
-                type = getEnclosingTypeElement(element);
+                type = getEnclosingTypeElement(context);
             }
 
             var url = getResourceURLOf(asClass(type));
@@ -189,23 +189,23 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
             return div(attr("class", "summary"),
                        h3("Maven Plugin Parameter Summary"),
-                       table(tag, element, asClass(type), mojo,
+                       table(tag, context, asClass(type), mojo,
                              asStream((NodeList)
                                       compile("parameters/parameter")
                                       .evaluate(mojo, NODESET))));
         }
 
-        private FluentNode table(UnknownInlineTagTree tag, Element element,
+        private FluentNode table(UnknownInlineTagTree tag, Element context,
                                  Class<?> type,
                                  Node mojo, Stream<Node> parameters) {
             return table(thead(tr(th(EMPTY), th("Field"),
                                   th("Default"), th("Property"),
                                   th("Required"), th("Editable"),
                                   th("Description"))),
-                         tbody(parameters.map(t -> tr(tag, element, type, mojo, t))));
+                         tbody(parameters.map(t -> tr(tag, context, type, mojo, t))));
         }
 
-        private FluentNode tr(UnknownInlineTagTree tag, Element element,
+        private FluentNode tr(UnknownInlineTagTree tag, Element context,
                               Class<?> type, Node mojo, Node parameter) {
             var tr = fragment();
 
@@ -216,9 +216,9 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 if (field != null) {
                     tr =
                         tr(td((! type.equals(field.getDeclaringClass()))
-                                  ? type(tag, element, field.getDeclaringClass())
+                                  ? type(tag, context, field.getDeclaringClass())
                                   : text(EMPTY)),
-                           td(declaration(tag, element, field)),
+                           td(declaration(tag, context, field)),
                            td(code(compile("configuration/%s/@default-value", name)
                                    .evaluate(mojo))),
                            td(code(compile("configuration/%s", name)
@@ -254,13 +254,13 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                             + Pattern.quote(NAME));
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
             Class<?> type = null;
 
-            if (element instanceof PackageElement) {
-                type = asPackageInfoClass((PackageElement) element);
+            if (context instanceof PackageElement) {
+                type = asPackageInfoClass((PackageElement) context);
             } else {
-                type = asClass(getEnclosingTypeElement(element));
+                type = asClass(getEnclosingTypeElement(context));
             }
 
             var url = getResourceURLOf(type);
@@ -308,25 +308,25 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
             return div(attr("class", "summary"),
                        h3(compile("/plugin/name").evaluate(document)),
                        p(compile("/plugin/description").evaluate(document)),
-                       table(tag, element,
+                       table(tag, context,
                              asStream((NodeList)
                                       compile("/plugin/mojos/mojo")
                                       .evaluate(document, NODESET))));
         }
 
-        private FluentNode table(UnknownInlineTagTree tag, Element element,
+        private FluentNode table(UnknownInlineTagTree tag, Element context,
                                  Stream<Node> mojos) {
             return table(thead(tr(th("Goal"), th("Phase"), th("Description"))),
-                         tbody(mojos.map(t -> tr(tag, element, t))));
+                         tbody(mojos.map(t -> tr(tag, context, t))));
         }
 
-        private FluentNode tr(UnknownInlineTagTree tag, Element element,
+        private FluentNode tr(UnknownInlineTagTree tag, Element context,
                               Node mojo) {
             var tr = fragment();
 
             try {
                 tr =
-                    tr(td(a(tag, element,
+                    tr(td(a(tag, context,
                             compile("implementation").evaluate(mojo),
                             code(compile("goal").evaluate(mojo)))),
                        td(code(compile("phase").evaluate(mojo))),
@@ -360,14 +360,14 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
             Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/pom[.]properties");
 
         @Override
-        public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+        public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
             var properties = new POMProperties();
             Class<?> type = null;
 
-            if (element instanceof PackageElement) {
-                type = asPackageInfoClass((PackageElement) element);
+            if (context instanceof PackageElement) {
+                type = asPackageInfoClass((PackageElement) context);
             } else {
-                type = asClass(getEnclosingTypeElement(element));
+                type = asClass(getEnclosingTypeElement(context));
             }
 
             var url = getResourceURLOf(type);
@@ -378,7 +378,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                 var document =
                     DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder()
-                    .parse(getPomFileFor(tag, element));
+                    .parse(getPomFileFor(tag, context));
 
                 Stream.of(GROUP_ID, ARTIFACT_ID, VERSION)
                     .forEach(t -> properties.load(t, document, "/project/"));

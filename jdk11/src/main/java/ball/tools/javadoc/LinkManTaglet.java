@@ -53,7 +53,7 @@ public class LinkManTaglet extends AbstractInlineTaglet implements PatternMatche
     protected void setSection(String string) { section = string; }
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         PatternMatcherBean.super.initialize(getText(tag).trim());
 
         var path = new File(File.separator);

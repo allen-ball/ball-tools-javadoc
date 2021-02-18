@@ -59,14 +59,14 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
     };
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         TypeElement type = null;
         var argv = getText(tag).trim().split("[\\p{Space}]+", 2);
 
         if (isNotEmpty(argv[0])) {
-            type = getTypeElementFor(element, argv[0]);
+            type = getTypeElementFor(context, argv[0]);
         } else {
-            type = getEnclosingTypeElement(element);
+            type = getEnclosingTypeElement(context);
         }
 
         Set<Class<? extends Annotation>> set = new HashSet<>();
@@ -113,24 +113,24 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet {
 
         return div(attr("class", "summary"),
                    h3("Injected Field Summary"),
-                   table(tag, element, asClass(type), set));
+                   table(tag, context, asClass(type), set));
     }
 
-    private FluentNode table(UnknownInlineTagTree tag, Element element,
+    private FluentNode table(UnknownInlineTagTree tag, Element context,
                              Class<?> type, Set<Class<? extends Annotation>> set) {
         return table(thead(tr(th("Annotation(s)"), th("Field"))),
                      tbody(Stream.of(type.getDeclaredFields())
                            .filter(t -> (Stream.of(t.getAnnotations())
                                          .filter(a -> set.contains(a.annotationType()))
                                          .findFirst().isPresent()))
-                           .map(t -> tr(tag, element, t, set))));
+                           .map(t -> tr(tag, context, t, set))));
     }
 
-    private FluentNode tr(UnknownInlineTagTree tag, Element element,
+    private FluentNode tr(UnknownInlineTagTree tag, Element context,
                           Field field, Set<Class<? extends Annotation>> set) {
         return tr(td(fragment(Stream.of(field.getAnnotations())
                               .filter(t -> set.contains(t.annotationType()))
-                              .map(t -> annotation(tag, element, t)))),
-                  td(declaration(tag, element, field)));
+                              .map(t -> annotation(tag, context, t)))),
+                  td(declaration(tag, context, field)));
     }
 }

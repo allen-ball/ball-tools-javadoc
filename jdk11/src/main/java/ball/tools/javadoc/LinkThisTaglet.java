@@ -41,11 +41,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @NoArgsConstructor @ToString
 public class LinkThisTaglet extends AbstractInlineTaglet {
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         if (isNotEmpty(getText(tag).trim())) {
             throw new IllegalArgumentException("Invalid argument");
         }
 
-        return a(tag, element, getEnclosingTypeElement(element), code("this"));
+        return a(tag, context, getEnclosingTypeElement(context), code("this"));
     }
 }

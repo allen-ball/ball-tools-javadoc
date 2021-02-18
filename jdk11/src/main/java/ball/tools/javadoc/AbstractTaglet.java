@@ -96,7 +96,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     protected DocTrees trees = null;
     private Map<String,URI> extern = null;
     private transient ClassLoader loader = null;
-    private transient Method dispatcher = null;
+    private transient Method href = null;
 
     {
         try {
@@ -151,16 +151,16 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * Abstract method to be overridden by subclass implementations.
      *
      * @param   tags            The list of instances of this tag.
-     * @param   element         The element to which the enclosing comment
+     * @param   context         The element to which the enclosing comment
      *                          belongs.
      *
      * @return  The {@link Node} representing the output.
      *
      * @throws  Throwable       As required by the subclass.
      */
-    protected abstract Node toNode(List<? extends DocTree> tags, Element element) throws Throwable;
+    protected abstract Node toNode(List<? extends DocTree> tags, Element context) throws Throwable;
 
-    private FluentNode toNode(DocTree tag, Element element, Throwable throwable) {
+    private FluentNode toNode(DocTree tag, Element context, Throwable throwable) {
         var string = "@" + getName();
 
         if (isNotEmpty(getText(tag))) {
@@ -343,10 +343,10 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
     @Override
     public URI href(DocTree tag, Element context, Object target) {
-        URI href = null;
+        URI uri = null;
 
-        if (dispatcher == null) {
-            dispatcher = new Object() { }.getClass().getEnclosingMethod();
+        if (href == null) {
+            href = new Object() { }.getClass().getEnclosingMethod();
         }
 
         if (target != null) {
@@ -357,9 +357,10 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             try {
                 var method =
                     AbstractTaglet.class
-                    .getDeclaredMethod(dispatcher.getName(), parameters);
+                    .getDeclaredMethod(href.getName(), parameters);
 
-                if (Objects.equals(dispatcher, method)) {
+                if (Objects.equals(href, method)
+                    || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
                     throw new NoSuchMethodException();
                 }
 
@@ -367,7 +368,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                     Stream.of(tag, context, target)
                     .toArray(Object[]::new);
 
-                href = (URI) method.invoke(this, arguments);
+                uri = (URI) method.invoke(this, arguments);
             } catch (Exception exception) {
                 print(WARNING, tag, context,
                       "No method to get href for %s",
@@ -375,7 +376,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             }
         }
 
-        return href;
+        return uri;
     }
 
     private URI href(DocTree tag, Element context, Class<?> target) {
@@ -584,8 +585,18 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         var href = href(tag, element, target);
 
         if (node == null) {
-            var name =
-                (href != null) ? target.getSimpleName() : target.getCanonicalName();
+            var name = target.getCanonicalName();
+
+            if (href != null) {
+                name = target.getSimpleName();
+
+                var enclosing = target.getEnclosingClass();
+
+                while (enclosing != null) {
+                    name = enclosing.getSimpleName() + "." + name;
+                    enclosing = enclosing.getEnclosingClass();
+                }
+            }
 
             node = code(name + brackets);
         }

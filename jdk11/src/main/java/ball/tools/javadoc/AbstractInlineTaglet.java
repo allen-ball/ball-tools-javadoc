@@ -42,20 +42,20 @@ public abstract class AbstractInlineTaglet extends AbstractTaglet {
     public boolean isInlineTag() { return true; }
 
     @Override
-    protected Node toNode(List<? extends DocTree> tags, Element element) throws Throwable {
-        return toNode((UnknownInlineTagTree) tags.get(0), element);
+    protected Node toNode(List<? extends DocTree> tags, Element context) throws Throwable {
+        return toNode((UnknownInlineTagTree) tags.get(0), context);
     }
 
     /**
      * Abstract method to be overridden by subclass implementations.
      *
      * @param   tag             The instance of this tag.
-     * @param   element         The element to which the enclosing comment
+     * @param   context         The element to which the enclosing comment
      *                          belongs.
      *
      * @return  The {@link Node} representing the output.
      *
      * @throws  Throwable       As required by the subclass.
      */
-    protected abstract Node toNode(UnknownInlineTagTree tag, Element element) throws Throwable;
+    protected abstract Node toNode(UnknownInlineTagTree tag, Element context) throws Throwable;
 }

@@ -105,7 +105,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     private final FluentDocument document;
     private Configuration configuration = null;
     private transient ClassLoader loader = null;
-    private transient Method dispatcher = null;
+    private transient Method href = null;
 
     /**
      * Sole constructor.
@@ -646,10 +646,10 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
 
     @Override
     public URI href(Tag tag, Object target) {
-        URI href = null;
+        URI uri = null;
 
-        if (dispatcher == null) {
-            dispatcher = new Object() { }.getClass().getEnclosingMethod();
+        if (href == null) {
+            href = new Object() { }.getClass().getEnclosingMethod();
         }
 
         if (target != null) {
@@ -660,15 +660,18 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             try {
                 Method method =
                     AbstractTaglet.class
-                    .getDeclaredMethod(dispatcher.getName(), parameters);
+                    .getDeclaredMethod(href.getName(), parameters);
 
-                if (! Objects.equals(dispatcher, method)) {
-                    Object[] arguments =
-                        Stream.of(tag, target)
-                        .toArray(Object[]::new);
-
-                    href = (URI) method.invoke(this, arguments);
+                if (Objects.equals(href, method)
+                    || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
+                    throw new NoSuchMethodException();
                 }
+
+                Object[] arguments =
+                    Stream.of(tag, target)
+                    .toArray(Object[]::new);
+
+                uri = (URI) method.invoke(this, arguments);
             } catch (Exception exception) {
                 System.err.println(tag.position() + ": "
                                    + "No method to get href for "
@@ -676,7 +679,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             }
         }
 
-        return href;
+        return uri;
     }
 
     private URI href(Tag tag, CharSequence target) {

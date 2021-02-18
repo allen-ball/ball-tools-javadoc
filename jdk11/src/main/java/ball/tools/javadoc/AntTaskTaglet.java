@@ -66,15 +66,15 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     private static final String DOCUMENTED = "DOCUMENTED";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         FluentNode node = null;
         TypeElement type = null;
         var name = getText(tag).trim();
 
         if (isNotEmpty(name)) {
-            type = getTypeElementFor(element, name);
+            type = getTypeElementFor(context, name);
         } else {
-            type = getEnclosingTypeElement(element);
+            type = getEnclosingTypeElement(context);
         }
 
         if (! isAssignableTo(Task.class).test(type)) {
@@ -84,13 +84,13 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
         }
 
         var template =
-            render(template(tag, asClass(type)), INDENTATION.length())
+            render(template(tag, context, asClass(type)), INDENTATION.length())
             .replaceAll(Pattern.quote(DOCUMENTED + "=\"\""), "...");
 
         return div(attr("class", "block"), pre("xml", template));
     }
 
-    private FluentNode template(UnknownInlineTagTree tag, Class<?> type) {
+    private FluentNode template(UnknownInlineTagTree tag, Element context, Class<?> type) {
         String name = null;
 
         if (name == null) {
@@ -141,11 +141,11 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
             name = type.getSimpleName();
         }
 
-        return type(0, new HashSet<>(), tag, new SimpleEntry<>(name, type));
+        return type(0, new HashSet<>(), tag, context, new SimpleEntry<>(name, type));
     }
 
     private FluentNode type(int depth, Set<Map.Entry<?,?>> set,
-                            UnknownInlineTagTree tag,
+                            UnknownInlineTagTree tag, Element context,
                             Map.Entry<String,Class<?>> entry) {
         var helper = IntrospectionHelper.getHelper(entry.getValue());
         var node = element(entry.getKey());
@@ -154,8 +154,8 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
             && (! entry.getValue().getName()
                   .startsWith(Task.class.getPackage().getName()))) {
             node
-                .add(attributes(tag, helper))
-                .add(content(depth + 1, set, tag, helper));
+                .add(attributes(tag, context, helper))
+                .add(content(depth + 1, set, tag, context, helper));
 
             if (helper.supportsCharacters()) {
                 var content = "... text ...";
@@ -176,8 +176,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
         return node;
     }
 
-    private Node[] attributes(UnknownInlineTagTree tag,
-                              IntrospectionHelper helper) {
+    private Node[] attributes(UnknownInlineTagTree tag, Element context, IntrospectionHelper helper) {
         var array =
             helper.getAttributeMap().entrySet()
             .stream()
@@ -188,10 +187,10 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
     }
 
     private FluentNode content(int depth, Set<Map.Entry<?,?>> set,
-                               UnknownInlineTagTree tag,
+                               UnknownInlineTagTree tag, Element context,
                                IntrospectionHelper helper) {
         return fragment(helper.getNestedElementMap().entrySet()
                         .stream()
-                        .map(t -> type(depth, set, tag, t)));
+                        .map(t -> type(depth, set, tag, context, t)));
     }
 }

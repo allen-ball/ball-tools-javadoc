@@ -64,6 +64,8 @@ public class TagletProcessor extends AnnotatedNoAnnotationProcessor {
     private static final Method PROTOTYPE =
         PROTOTYPE.class.getDeclaredMethods()[0];
 
+    static { PROTOTYPE.setAccessible(true); }
+
     @Override
     protected void process(RoundEnvironment roundEnv, Element element) {
         TypeElement type = (TypeElement) element;

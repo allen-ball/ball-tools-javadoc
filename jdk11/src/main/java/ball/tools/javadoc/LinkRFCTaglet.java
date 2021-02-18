@@ -45,7 +45,7 @@ public class LinkRFCTaglet extends AbstractInlineTaglet {
     private static final String PATH = "/rfc/rfc%d.txt";
 
     @Override
-    public FluentNode toNode(UnknownInlineTagTree tag, Element element) throws Throwable {
+    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         int rfc = Integer.valueOf(getText(tag).trim());
         var node =
             a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null),

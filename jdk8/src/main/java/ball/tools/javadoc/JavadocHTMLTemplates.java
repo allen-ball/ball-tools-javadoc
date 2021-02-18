@@ -287,7 +287,8 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
         Class<?> type = annotation.annotationType();
         String string =
             String.valueOf(annotation)
-            .replace(type.getCanonicalName(), type.getSimpleName());
+            .replace(type.getCanonicalName(), type.getSimpleName())
+            .replaceAll("[(][)]$", "");
 
         return fragment().add(a(href(tag, type), code(string)));
     }

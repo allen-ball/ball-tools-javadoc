@@ -53,7 +53,7 @@ public class Extern extends TreeMap<String,URI> {
 
     /**
      * Method to configure an external Javadoc document for linking.
-     * ("{code -link}" option).
+     * ("{@code -link}" option).
      *
      * @param   javadoc         The {@link URI} of the external Javadoc.
      */
@@ -64,7 +64,7 @@ public class Extern extends TreeMap<String,URI> {
 
     /**
      * Method to configure an external Javadoc document for linking
-     * ("{code -linkoffline}" option).
+     * ("{@code -linkoffline}" option).
      *
      * @param   javadoc         The {@link URI} of the external Javadoc.
      * @param   packageList     The {@link URI} of the folder containing the

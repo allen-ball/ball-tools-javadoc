@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,12 +73,8 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * annotated with {@link TagletName}.</p>
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
-public abstract class AbstractTaglet extends JavaxLangModelUtilities
-                                     implements AnnotatedTaglet,
-                                                JavadocHTMLTemplates,
-                                                XalanConstants {
+public abstract class AbstractTaglet extends JavaxLangModelUtilities implements AnnotatedTaglet, JavadocHTMLTemplates, XalanConstants {
 
     /**
      * Implementation method for
@@ -118,10 +112,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @param   inMethod        See {@link #inMethod()}.
      * @param   inType          See {@link #inType()}.
      */
-    protected AbstractTaglet(boolean isInlineTag, boolean inPackage,
-                             boolean inOverview, boolean inField,
-                             boolean inConstructor, boolean inMethod,
-                             boolean inType) {
+    protected AbstractTaglet(boolean isInlineTag, boolean inPackage, boolean inOverview, boolean inField, boolean inConstructor, boolean inMethod, boolean inType) {
         this.isInlineTag = isInlineTag;
         this.inPackage = isInlineTag | inPackage;
         this.inOverview = isInlineTag | inOverview;
@@ -228,8 +219,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             string = "{" + string + "}";
         }
 
-        return fragment(p(b(u(string))),
-                        comment(ExceptionUtils.getStackTrace(throwable)));
+        return fragment(p(b(u(string))), comment(ExceptionUtils.getStackTrace(throwable)));
     }
 
     /**
@@ -262,14 +252,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         StringWriter writer = new StringWriter();
 
         try {
-            transformer
-                .setOutputProperty(INDENT, (indent > 0) ? YES : NO);
-            transformer
-                .setOutputProperty(XALAN_INDENT_AMOUNT.toString(),
-                                   String.valueOf(indent > 0 ? indent : 0));
-            transformer
-                .transform(new DOMSource(node),
-                           new StreamResult(writer));
+            transformer.setOutputProperty(INDENT, (indent > 0) ? YES : NO);
+            transformer.setOutputProperty(XALAN_INDENT_AMOUNT.toString(), String.valueOf(indent > 0 ? indent : 0));
+            transformer.transform(new DOMSource(node), new StreamResult(writer));
         } catch (RuntimeException exception) {
             throw exception;
         } catch (Error error) {
@@ -426,11 +411,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @return  The {@link ConstructorDoc} if it can be found; {@code null}
      *          otherwise.
      */
-    protected ConstructorDoc getConstructorDocFor(Tag tag,
-                                                  Constructor<?> constructor) {
+    protected ConstructorDoc getConstructorDocFor(Tag tag, Constructor<?> constructor) {
         ConstructorDoc constructorDoc = null;
-        ClassDoc classDoc =
-            getClassDocFor(tag, constructor.getDeclaringClass());
+        ClassDoc classDoc = getClassDocFor(tag, constructor.getDeclaringClass());
 
         if (classDoc != null) {
             constructorDoc =
@@ -560,8 +543,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         if (doc != null) {
             name =
                 (doc.containingClass() != null)
-                    ? (getClassNameFor(doc.containingClass())
-                       + "$" + doc.simpleTypeName())
+                    ? (getClassNameFor(doc.containingClass()) + "$" + doc.simpleTypeName())
                     : doc.qualifiedName();
         }
 
@@ -576,9 +558,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @return  The {@link Class}'s resource path (as a {@link String}).
      */
     protected String getResourcePathOf(Class<?> type) {
-        String path =
-            String.join("/", type.getName().split(Pattern.quote(".")))
-            + ".class";
+        String path = String.join("/", type.getName().split(Pattern.quote("."))) + ".class";
 
         return path;
     }
@@ -658,12 +638,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 .toArray(Class<?>[]::new);
 
             try {
-                Method method =
-                    AbstractTaglet.class
-                    .getDeclaredMethod(href.getName(), parameters);
+                Method method = AbstractTaglet.class.getDeclaredMethod(href.getName(), parameters);
 
-                if (Objects.equals(href, method)
-                    || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
+                if (Objects.equals(href, method) || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
                     throw new NoSuchMethodException();
                 }
 
@@ -714,8 +691,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 if (configuration != null) {
                     DocLink link =
                         configuration.extern
-                        .getExternalLink(packageDoc.name(),
-                                         null, classDoc.name() + ".html");
+                        .getExternalLink(packageDoc.name(), null, classDoc.name() + ".html");
                     /*
                      * Link might be null because the class cannot be
                      * loaded.
@@ -732,9 +708,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 String fragment = "#" + target.name();
 
                 if (target instanceof ExecutableMemberDoc) {
-                    fragment +=
-                        ((ExecutableMemberDoc) target).signature()
-                        .replaceAll("[(),]", "-");
+                    fragment += ((ExecutableMemberDoc) target).signature().replaceAll("[(),]", "-");
                 }
 
                 href = href.resolve(fragment);
@@ -794,8 +768,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         ClassDoc target = getClassDocFor(tag, type);
 
         if (node == null) {
-            String name =
-                ((target != null) ? target.name() : type.getCanonicalName());
+            String name = ((target != null) ? target.name() : type.getCanonicalName());
 
             node = code(name + brackets);
         }

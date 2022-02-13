@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +46,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * with their name.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @Documented
 @Retention(RUNTIME)
@@ -65,8 +62,7 @@ public @interface TagletName {
     @NoArgsConstructor @ToString
     public class ProcessorImpl extends AnnotatedProcessor {
         @Override
-        protected void process(RoundEnvironment roundEnv,
-                               TypeElement annotation, Element element) {
+        protected void process(RoundEnvironment roundEnv, TypeElement annotation, Element element) {
             super.process(roundEnv, annotation, element);
 
             AnnotationMirror mirror = getAnnotationMirror(element, annotation);
@@ -75,12 +71,10 @@ public @interface TagletName {
 
             if (! name.isEmpty()) {
                 if (element.getModifiers().contains(ABSTRACT)) {
-                    print(ERROR, element, mirror,
-                          "%s is %s", element.getKind(), ABSTRACT);
+                    print(ERROR, element, mirror, "%s is %s", element.getKind(), ABSTRACT);
                 }
             } else {
-                print(ERROR, element, mirror, value,
-                      "value() must be a non-empty String");
+                print(ERROR, element, mirror, value, "value() must be a non-empty String");
             }
         }
     }

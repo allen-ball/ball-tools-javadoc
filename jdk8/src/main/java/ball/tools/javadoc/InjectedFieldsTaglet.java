@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +40,12 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * injected.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("injected.fields")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
-public class InjectedFieldsTaglet extends AbstractInlineTaglet
-                                  implements SunToolsInternalToolkitTaglet {
-    private static final InjectedFieldsTaglet INSTANCE =
-        new InjectedFieldsTaglet();
+public class InjectedFieldsTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
+    private static final InjectedFieldsTaglet INSTANCE = new InjectedFieldsTaglet();
 
     public static void register(Map<Object,Object> map) {
         register(map, INSTANCE);
@@ -83,9 +78,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet
             Class<? extends Annotation> annotation = null;
 
             try {
-                annotation =
-                    Class.forName(name, false, getClassLoader())
-                    .asSubclass(Annotation.class);
+                annotation = Class.forName(name, false, getClassLoader()).asSubclass(Annotation.class);
             } catch (Exception exception) {
             }
 
@@ -105,9 +98,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet
                 case SOURCE:
                 default:
                     throw new IllegalStateException(annotation.getCanonicalName()
-                                                    + " specifies "
-                                                    + retention.value()
-                                                    + " retention policy");
+                                                    + " specifies " + retention.value() + " retention policy");
                     /* break; */
                 }
 
@@ -124,8 +115,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet
                    table(tag, getClassFor(doc), set));
     }
 
-    private FluentNode table(Tag tag, Class<?> type,
-                             Set<Class<? extends Annotation>> set) {
+    private FluentNode table(Tag tag, Class<?> type, Set<Class<? extends Annotation>> set) {
         return table(thead(tr(th("Annotation(s)"), th("Field"))),
                      tbody(Stream.of(type.getDeclaredFields())
                            .filter(t -> (Stream.of(t.getAnnotations())
@@ -134,8 +124,7 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet
                            .map(t -> tr(tag, t, set))));
     }
 
-    private FluentNode tr(Tag tag, Field field,
-                          Set<Class<? extends Annotation>> set) {
+    private FluentNode tr(Tag tag, Field field, Set<Class<? extends Annotation>> set) {
         return tr(td(fragment(Stream.of(field.getAnnotations())
                               .filter(t -> set.contains(t.annotationType()))
                               .map(t -> annotation(tag, t)))),

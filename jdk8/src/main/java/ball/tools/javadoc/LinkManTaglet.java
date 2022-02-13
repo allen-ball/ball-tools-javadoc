@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,15 +34,12 @@ import lombok.ToString;
  * Inline {@link Taglet} providing links to {@link.man man(1)} pages.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("link.man")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
 @PatternRegex("(?is)(?<name>.+)[(](?<section>[\\p{Alnum}]+)[)]")
-public class LinkManTaglet extends AbstractInlineTaglet
-                           implements SunToolsInternalToolkitTaglet,
-                                      PatternMatcherBean {
+public class LinkManTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet, PatternMatcherBean {
     private static final LinkManTaglet INSTANCE = new LinkManTaglet();
 
     public static void register(Map<Object,Object> map) {

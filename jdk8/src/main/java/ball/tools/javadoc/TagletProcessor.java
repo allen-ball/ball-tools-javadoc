@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +47,6 @@ import static javax.tools.Diagnostic.Kind.WARNING;
  * {@link.uri https://docs.oracle.com/javase/8/docs/jdk/api/javadoc/taglet/com/sun/tools/doclets/Taglet.html Taglet}.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @ServiceProviderFor({ Processor.class })
 @ForElementKinds({ CLASS })
@@ -61,8 +58,7 @@ public class TagletProcessor extends AnnotatedNoAnnotationProcessor {
         public static void register(Map<Object,Object> map) { }
     }
 
-    private static final Method PROTOTYPE =
-        PROTOTYPE.class.getDeclaredMethods()[0];
+    private static final Method PROTOTYPE = PROTOTYPE.class.getDeclaredMethods()[0];
 
     static { PROTOTYPE.setAccessible(true); }
 
@@ -71,12 +67,10 @@ public class TagletProcessor extends AnnotatedNoAnnotationProcessor {
         TypeElement type = (TypeElement) element;
         ExecutableElement method = getMethod(type, PROTOTYPE);
 
-        if (! (method != null
-               && method.getModifiers().containsAll(getModifiers(PROTOTYPE)))) {
+        if (! (method != null && method.getModifiers().containsAll(getModifiers(PROTOTYPE)))) {
             print(WARNING, element,
                   "%s implements %s but does not implement '%s'",
-                  element.getKind(), Taglet.class.getName(),
-                  declaration(PROTOTYPE));
+                  element.getKind(), Taglet.class.getName(), declaration(PROTOTYPE));
         }
     }
 }

@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +42,6 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  * their {@link Taglet#getAllowedLocations() allowed locations}.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @Documented
 @Retention(RUNTIME)
@@ -61,8 +58,7 @@ public @interface AllowedLocations {
     @NoArgsConstructor @ToString
     public class ProcessorImpl extends AnnotatedProcessor {
         @Override
-        protected void process(RoundEnvironment roundEnv,
-                               TypeElement annotation, Element element) {
+        protected void process(RoundEnvironment roundEnv, TypeElement annotation, Element element) {
             super.process(roundEnv, annotation, element);
 
             var mirror = getAnnotationMirror(element, annotation);

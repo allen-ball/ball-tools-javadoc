@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +32,6 @@ import lombok.ToString;
  * Inline {@link jdk.javadoc.doclet.Taglet} to provide external links.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("link.uri")
 @ServiceProviderFor({ Taglet.class })
@@ -68,8 +65,7 @@ public class LinkURITaglet extends AbstractInlineTaglet {
         }
 
         return a(href, text)
-                   .add(map.entrySet()
-                        .stream()
+                   .add(map.entrySet().stream()
                         .map(t -> attr(t.getKey(), t.getValue())));
     }
 }

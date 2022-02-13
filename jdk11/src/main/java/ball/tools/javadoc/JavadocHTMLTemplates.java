@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +59,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * Javadoc {@link HTMLTemplates}.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 public interface JavadocHTMLTemplates extends HTMLTemplates {
 
@@ -464,8 +461,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
         FluentNode node = null;
 
         if (type instanceof ParameterizedType) {
-            node =
-                fragment(type(tag, context, ((ParameterizedType) type).getRawType()));
+            node = fragment(type(tag, context, ((ParameterizedType) type).getRawType()));
 
             var types = ((ParameterizedType) type).getActualTypeArguments();
 
@@ -502,8 +498,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode table(DocTree tag, Element context,
-                                    TableModel model, Stream<Node> stream) {
+    public default FluentNode table(DocTree tag, Element context, TableModel model, Stream<Node> stream) {
         return table(tag, context, model, stream.toArray(Node[]::new));
     }
 
@@ -520,8 +515,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
      *
      * @return  {@link org.w3c.dom.Element}
      */
-    public default FluentNode table(DocTree tag, Element context,
-                                    TableModel model, Node... nodes) {
+    public default FluentNode table(DocTree tag, Element context, TableModel model, Node... nodes) {
         var table = table();
         var names =
             IntStream.range(0, model.getColumnCount())
@@ -538,8 +532,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
                        .boxed()
                        .map(y -> tr(IntStream.range(0, names.length)
                                     .boxed()
-                                    .map(x -> td(toHTML(tag, context,
-                                                        model.getValueAt(y, x))))))));
+                                    .map(x -> td(toHTML(tag, context, model.getValueAt(y, x))))))));
 
         return table.add(nodes);
     }
@@ -585,8 +578,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
             node = a(tag, context, (Method) object);
         } else if (object instanceof Collection<?>) {
             List<Node> nodes =
-                ((Collection<?>) object)
-                .stream()
+                ((Collection<?>) object).stream()
                 .map(t -> toHTML(tag, context, t))
                 .collect(toList());
 

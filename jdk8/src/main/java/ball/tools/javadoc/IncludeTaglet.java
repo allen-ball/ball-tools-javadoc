@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +42,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * {@link java.lang.reflect.Field} or resource in the Javadoc output.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("include")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
-public class IncludeTaglet extends AbstractInlineTaglet
-                           implements SunToolsInternalToolkitTaglet {
+public class IncludeTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
     private static final IncludeTaglet INSTANCE = new IncludeTaglet();
 
     public static void register(Map<Object,Object> map) {
@@ -68,9 +64,7 @@ public class IncludeTaglet extends AbstractInlineTaglet
             if (target.length > 1) {
                 node =
                     field(tag,
-                          getClassFor(isNotEmpty(target[0])
-                                          ? getClassDocFor(tag, target[0])
-                                          : containingClass(tag)),
+                          getClassFor(isNotEmpty(target[0]) ? getClassDocFor(tag, target[0]) : containingClass(tag)),
                           target[1]);
             } else {
                 Class<?> type = null;
@@ -99,14 +93,11 @@ public class IncludeTaglet extends AbstractInlineTaglet
         if (value instanceof Collection<?>) {
             node =
                 table(tag,
-                      new ListTableModel(((Collection<?>) value)
-                                         .stream()
+                      new ListTableModel(((Collection<?>) value).stream()
                                          .collect(Collectors.toList()),
                                          "Element"));
         } else if (value instanceof Map<?,?>) {
-            node =
-                table(tag,
-                      new MapTableModel((Map<?,?>) value, "Key", "Value"));
+            node = table(tag, new MapTableModel((Map<?,?>) value, "Key", "Value"));
         } else {
             node = pre(String.valueOf(value));
         }

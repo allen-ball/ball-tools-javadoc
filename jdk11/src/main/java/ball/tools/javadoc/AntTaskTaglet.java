@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +50,6 @@ import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
  * {@link Task}s.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("ant.task")
 @ServiceProviderFor({ Taglet.class })
@@ -79,8 +76,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
 
         if (! isAssignableTo(Task.class).test(type)) {
             throw new IllegalArgumentException(type.getQualifiedName()
-                                               + " is not a subclass of "
-                                               + Task.class.getCanonicalName());
+                                               + " is not a subclass of " + Task.class.getCanonicalName());
         }
 
         var template =
@@ -98,10 +94,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
             var pkg = type.getPackage().getName();
 
             while (pkg != null) {
-                var url =
-                    type.getResource("/"
-                                     + String.join("/", pkg.split(Pattern.quote(".")))
-                                     + "/antlib.xml");
+                var url = type.getResource("/" + String.join("/", pkg.split(Pattern.quote("."))) + "/antlib.xml");
 
                 if (url != null) {
                     try {
@@ -124,8 +117,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
             var helper = ComponentHelper.getComponentHelper(project);
 
             name =
-                helper.getTaskDefinitions().entrySet()
-                .stream()
+                helper.getTaskDefinitions().entrySet().stream()
                 .filter(t -> t.getValue().equals(type))
                 .map(t -> t.getKey())
                 .findFirst().orElse(null);
@@ -144,15 +136,11 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
         return type(0, new HashSet<>(), tag, context, new SimpleEntry<>(name, type));
     }
 
-    private FluentNode type(int depth, Set<Map.Entry<?,?>> set,
-                            UnknownInlineTagTree tag, Element context,
-                            Map.Entry<String,Class<?>> entry) {
+    private FluentNode type(int depth, Set<Map.Entry<?,?>> set, UnknownInlineTagTree tag, Element context, Map.Entry<String,Class<?>> entry) {
         var helper = IntrospectionHelper.getHelper(entry.getValue());
         var node = element(entry.getKey());
 
-        if (set.add(entry)
-            && (! entry.getValue().getName()
-                  .startsWith(Task.class.getPackage().getName()))) {
+        if (set.add(entry) && (! entry.getValue().getName().startsWith(Task.class.getPackage().getName()))) {
             node
                 .add(attributes(tag, context, helper))
                 .add(content(depth + 1, set, tag, context, helper));
@@ -178,19 +166,15 @@ public class AntTaskTaglet extends AbstractInlineTaglet {
 
     private Node[] attributes(UnknownInlineTagTree tag, Element context, IntrospectionHelper helper) {
         var array =
-            helper.getAttributeMap().entrySet()
-            .stream()
+            helper.getAttributeMap().entrySet().stream()
             .map(t -> attr(t.getKey(), t.getValue().getSimpleName()))
             .toArray(Node[]::new);
 
         return array;
     }
 
-    private FluentNode content(int depth, Set<Map.Entry<?,?>> set,
-                               UnknownInlineTagTree tag, Element context,
-                               IntrospectionHelper helper) {
-        return fragment(helper.getNestedElementMap().entrySet()
-                        .stream()
+    private FluentNode content(int depth, Set<Map.Entry<?,?>> set, UnknownInlineTagTree tag, Element context, IntrospectionHelper helper) {
+        return fragment(helper.getNestedElementMap().entrySet().stream()
                         .map(t -> type(depth, set, tag, context, t)));
     }
 }

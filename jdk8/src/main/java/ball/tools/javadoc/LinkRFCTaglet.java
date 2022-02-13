@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +31,11 @@ import lombok.ToString;
  * Inline {@link Taglet} providing links to external RFCs.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("link.rfc")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
-public class LinkRFCTaglet extends AbstractInlineTaglet
-                           implements SunToolsInternalToolkitTaglet {
+public class LinkRFCTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
     private static final LinkRFCTaglet INSTANCE = new LinkRFCTaglet();
 
     public static void register(Map<Object,Object> map) {
@@ -57,8 +53,7 @@ public class LinkRFCTaglet extends AbstractInlineTaglet
         int rfc = Integer.valueOf(tag.text().trim());
 
         node =
-            a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null),
-              String.format(TEXT, rfc))
+            a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null), String.format(TEXT, rfc))
             .add(attr("target", "newtab"));
 
         return node;

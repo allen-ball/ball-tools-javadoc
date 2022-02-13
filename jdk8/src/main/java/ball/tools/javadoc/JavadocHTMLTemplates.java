@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +51,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * Javadoc {@link HTMLTemplates}.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 public interface JavadocHTMLTemplates extends HTMLTemplates {
 
@@ -323,8 +320,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
         FluentNode node = null;
 
         if (type instanceof ParameterizedType) {
-            node =
-                fragment(type(tag, ((ParameterizedType) type).getRawType()));
+            node = fragment(type(tag, ((ParameterizedType) type).getRawType()));
 
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
 
@@ -439,8 +435,7 @@ public interface JavadocHTMLTemplates extends HTMLTemplates {
             node = a(tag, (Method) object);
         } else if (object instanceof Collection<?>) {
             List<Node> nodes =
-                ((Collection<?>) object)
-                .stream()
+                ((Collection<?>) object).stream()
                 .map(t -> toHTML(tag, t))
                 .collect(Collectors.toList());
 

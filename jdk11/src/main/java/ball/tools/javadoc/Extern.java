@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +38,6 @@ import static java.util.stream.Collectors.toList;
  * package::URI {@link java.util.Map} for externally-linked Javadoc.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @NoArgsConstructor
 public class Extern extends TreeMap<String,URI> {
@@ -57,8 +54,7 @@ public class Extern extends TreeMap<String,URI> {
      *
      * @param   javadoc         The {@link URI} of the external Javadoc.
      */
-    public void link(URI javadoc) throws InterruptedException,
-                                         IOException {
+    public void link(URI javadoc) throws InterruptedException, IOException {
         link(javadoc, javadoc);
     }
 
@@ -70,8 +66,7 @@ public class Extern extends TreeMap<String,URI> {
      * @param   packageList     The {@link URI} of the folder containing the
      *                          package list.
      */
-    public void link(URI javadoc, URI packageList) throws InterruptedException,
-                                                          IOException {
+    public void link(URI javadoc, URI packageList) throws InterruptedException, IOException {
         List<String> list = null;
 
         for (String name : List.of(ELEMENT_LIST, PACKAGE_LIST)) {
@@ -108,10 +103,7 @@ public class Extern extends TreeMap<String,URI> {
 
             for (var key : list) {
                 if (key.startsWith(MODULE_PREFIX)) {
-                    value =
-                        javadoc
-                        .resolve(key.substring(MODULE_PREFIX.length()) + "/")
-                        .normalize();
+                    value = javadoc.resolve(key.substring(MODULE_PREFIX.length()) + "/").normalize();
                 } else {
                     putIfAbsent(key, value);
                 }

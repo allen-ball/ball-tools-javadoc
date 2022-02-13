@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,13 +79,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * annotated with {@link TagletName}.</p>
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @NoArgsConstructor(access = PROTECTED)
-public abstract class AbstractTaglet extends JavaxLangModelUtilities
-                                     implements AnnotatedTaglet,
-                                                JavadocHTMLTemplates,
-                                                XalanConstants {
+public abstract class AbstractTaglet extends JavaxLangModelUtilities implements AnnotatedTaglet, JavadocHTMLTemplates, XalanConstants {
     private final Transformer transformer;
     private final FluentDocument document;
     private DocletEnvironment env = null;
@@ -205,14 +199,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         var writer = new StringWriter();
 
         try {
-            transformer
-                .setOutputProperty(INDENT, (indent > 0) ? YES : NO);
-            transformer
-                .setOutputProperty(XALAN_INDENT_AMOUNT.toString(),
-                                   String.valueOf(indent > 0 ? indent : 0));
-            transformer
-                .transform(new DOMSource(node),
-                           new StreamResult(writer));
+            transformer.setOutputProperty(INDENT, (indent > 0) ? YES : NO);
+            transformer.setOutputProperty(XALAN_INDENT_AMOUNT.toString(), String.valueOf(indent > 0 ? indent : 0));
+            transformer.transform(new DOMSource(node), new StreamResult(writer));
         } catch (RuntimeException exception) {
             throw exception;
         } catch (Error error) {
@@ -236,8 +225,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      *
      * @see DocTrees#printMessage(Diagnostic.Kind,CharSequence,DocTree,DocCommentTree,CompilationUnitTree)
      */
-    protected void print(Diagnostic.Kind kind, DocTree tag, Element element,
-                         String format, Object... argv) {
+    protected void print(Diagnostic.Kind kind, DocTree tag, Element element, String format, Object... argv) {
         var comment = trees.getDocCommentTree(element);
         var path = trees.getPath(element);
         var unit = (path != null) ? path.getCompilationUnit() : null;
@@ -258,11 +246,8 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      *
      * @see DocTrees#printMessage(Diagnostic.Kind,CharSequence,DocTree,DocCommentTree,CompilationUnitTree)
      */
-    protected void print(Diagnostic.Kind kind, DocTree tag,
-                         DocCommentTree comment, CompilationUnitTree unit,
-                         String format, Object... argv) {
-        trees.printMessage(kind, String.format(format, argv),
-                           tag, comment, unit);
+    protected void print(Diagnostic.Kind kind, DocTree tag, DocCommentTree comment, CompilationUnitTree unit, String format, Object... argv) {
+        trees.printMessage(kind, String.format(format, argv), tag, comment, unit);
     }
 
     /**
@@ -273,9 +258,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
      * @return  The {@link Class}'s resource path (as a {@link String}).
      */
     protected String getResourcePathOf(Class<?> type) {
-        var path =
-            String.join("/", type.getName().split(Pattern.quote(".")))
-            + ".class";
+        var path = String.join("/", type.getName().split(Pattern.quote("."))) + ".class";
 
         return path;
     }
@@ -355,12 +338,9 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 .toArray(Class<?>[]::new);
 
             try {
-                var method =
-                    AbstractTaglet.class
-                    .getDeclaredMethod(href.getName(), parameters);
+                var method = AbstractTaglet.class.getDeclaredMethod(href.getName(), parameters);
 
-                if (Objects.equals(href, method)
-                    || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
+                if (Objects.equals(href, method) || (! href.getReturnType().isAssignableFrom(method.getReturnType()))) {
                     throw new NoSuchMethodException();
                 }
 
@@ -386,8 +366,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
     private URI href(DocTree tag, Element context, Constructor<?> target) {
         var type = target.getDeclaringClass();
 
-        return href(tag, context, type,
-                    type.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
+        return href(tag, context, type, type.getSimpleName() + signature(target).replaceAll("[(),]", "-"));
     }
 
     private URI href(DocTree tag, Element context, Field target) {
@@ -426,9 +405,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             var enclosing = target.getEnclosingElement();
 
             if (enclosing instanceof TypeElement) {
-                href =
-                    href(tag, context, (TypeElement) enclosing,
-                         target.getSimpleName().toString());
+                href = href(tag, context, (TypeElement) enclosing, target.getSimpleName().toString());
             }
         }
 
@@ -445,8 +422,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                 String path = target.getCanonicalName() + ".html";
 
                 path =
-                    Stream.concat(Stream.of(getComponentsOf(target.getPackage())),
-                                  Stream.of(path))
+                    Stream.concat(Stream.of(getComponentsOf(target.getPackage())), Stream.of(path))
                     .collect(joining("/"));
 
                 href = href(href, path, fragment);
@@ -463,15 +439,13 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
             var path = getCanonicalNameOf(target) + ".html";
 
             path =
-                Stream.concat(Stream.of(getComponentsOf(elements.getPackageOf(target))),
-                              Stream.of(path))
+                Stream.concat(Stream.of(getComponentsOf(elements.getPackageOf(target))), Stream.of(path))
                 .collect(joining("/"));
 
             if (env.isIncluded(target)) {
                 int depth = getComponentsOf(elements.getPackageOf(context)).length;
                 path =
-                    Stream.concat(Stream.generate(() -> "..").limit(depth),
-                                  Stream.of(path))
+                    Stream.concat(Stream.generate(() -> "..").limit(depth), Stream.of(path))
                     .collect(joining("/"));
 
                 href = href(null, path, fragment);
@@ -514,14 +488,11 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
                  * a different ClassLoader necessitating access by
                  * reflection look-up.
                  */
-                extern =
-                    (Map<String,URI>)
-                    doclet.getClass().getField("extern").get(doclet);
+                extern = (Map<String,URI>) doclet.getClass().getField("extern").get(doclet);
             } catch (Exception exception) {
                 extern = new Extern();
                 print(WARNING, tag, context,
-                      "Configure '-doclet %s' for external links",
-                      StandardDoclet.class.getCanonicalName());
+                      "Configure '-doclet %s' for external links", StandardDoclet.class.getCanonicalName());
             }
         }
 
@@ -564,8 +535,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         URI href = href(tag, element, target);
 
         if (node == null) {
-            var name =
-                (href != null) ? target.getSimpleName() : target.getQualifiedName();
+            var name = (href != null) ? target.getSimpleName() : target.getQualifiedName();
 
             node = code(name.toString());
         }
@@ -645,8 +615,7 @@ public abstract class AbstractTaglet extends JavaxLangModelUtilities
         @Override
         public String visitUnknownInlineTag(UnknownInlineTagTree node, Void p) {
             var text =
-                node.getContent()
-                .stream()
+                node.getContent().stream()
                 .map(t -> t.accept(this, p))
                 .filter(Objects::nonNull)
                 .collect(joining(SPACE, EMPTY, EMPTY));

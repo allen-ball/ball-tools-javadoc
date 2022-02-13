@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +32,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * Inline {@link Taglet} to provide {@link.this} links.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("link.this")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
-public class LinkThisTaglet extends AbstractInlineTaglet
-                            implements SunToolsInternalToolkitTaglet {
+public class LinkThisTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
     private static final LinkThisTaglet INSTANCE = new LinkThisTaglet();
 
     public static void register(Map<Object,Object> map) {

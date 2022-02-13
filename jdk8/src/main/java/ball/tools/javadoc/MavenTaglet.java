@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,11 +65,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * {@link.uri https://maven.apache.org/index.html Maven} artifacts.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @NoArgsConstructor(access = PROTECTED)
-public abstract class MavenTaglet extends AbstractInlineTaglet
-                                  implements SunToolsInternalToolkitTaglet {
+public abstract class MavenTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
     private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
     private static final String POM_XML = "pom.xml";
@@ -162,9 +158,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
 
             switch (protocol) {
             case FILE:
-                String root =
-                    url.getPath()
-                    .replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY);
+                String root = url.getPath().replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY);
 
                 document =
                     DocumentBuilderFactory.newInstance()
@@ -191,16 +185,13 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
 
             Node mojo =
                 (Node)
-                compile("/plugin/mojos/mojo[implementation='%s']",
-                        type.getCanonicalName())
+                compile("/plugin/mojos/mojo[implementation='%s']", type.getCanonicalName())
                 .evaluate(document, NODE);
 
             return div(attr("class", "summary"),
                        h3("Maven Plugin Parameter Summary"),
                        table(tag, type, mojo,
-                             asStream((NodeList)
-                                      compile("parameters/parameter")
-                                      .evaluate(mojo, NODESET))));
+                             asStream((NodeList) compile("parameters/parameter").evaluate(mojo, NODESET))));
         }
 
         private FluentNode table(Tag tag, Class<?> type,
@@ -212,8 +203,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
                          tbody(parameters.map(t -> tr(tag, type, mojo, t))));
         }
 
-        private FluentNode tr(Tag tag, Class<?> type,
-                              Node mojo, Node parameter) {
+        private FluentNode tr(Tag tag, Class<?> type, Node mojo, Node parameter) {
             FluentNode tr = fragment();
 
             try {
@@ -226,10 +216,8 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
                                   ? type(tag, field.getDeclaringClass())
                                   : text(EMPTY)),
                            td(declaration(tag, field)),
-                           td(code(compile("configuration/%s/@default-value", name)
-                                   .evaluate(mojo))),
-                           td(code(compile("configuration/%s", name)
-                                   .evaluate(mojo))),
+                           td(code(compile("configuration/%s/@default-value", name).evaluate(mojo))),
+                           td(code(compile("configuration/%s", name).evaluate(mojo))),
                            td(code(compile("required").evaluate(parameter))),
                            td(code(compile("editable").evaluate(parameter))),
                            td(p(compile("description").evaluate(parameter))));
@@ -263,8 +251,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
         private static final String NAME = "plugin-help.xml";
         @CompileTimeCheck
         private static final Pattern PATTERN =
-            Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/"
-                            + Pattern.quote(NAME));
+            Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/" + Pattern.quote(NAME));
 
         @Override
         public FluentNode toNode(Tag tag) throws Throwable {
@@ -282,9 +269,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
 
             switch (protocol) {
             case FILE:
-                Path root =
-                    Paths.get(url.getPath()
-                              .replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY));
+                Path root = Paths.get(url.getPath().replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY));
                 Path path =
                     Files.walk(root, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
@@ -321,10 +306,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
             return div(attr("class", "summary"),
                        h3(compile("/plugin/name").evaluate(document)),
                        p(compile("/plugin/description").evaluate(document)),
-                       table(tag,
-                             asStream((NodeList)
-                                      compile("/plugin/mojos/mojo")
-                                      .evaluate(document, NODESET))));
+                       table(tag, asStream((NodeList) compile("/plugin/mojos/mojo").evaluate(document, NODESET))));
         }
 
         private FluentNode table(Tag tag, Stream<Node> mojos) {
@@ -337,9 +319,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet
 
             try {
                 tr =
-                    tr(td(a(tag,
-                            compile("implementation").evaluate(mojo),
-                            code(compile("goal").evaluate(mojo)))),
+                    tr(td(a(tag, compile("implementation").evaluate(mojo), code(compile("goal").evaluate(mojo)))),
                        td(code(compile("phase").evaluate(mojo))),
                        td(p(code(compile("description").evaluate(mojo)))));
             } catch (RuntimeException exception) {

@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +39,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * {@bean.info}
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("bean.info")
 @ServiceProviderFor({ Taglet.class })
@@ -58,9 +55,7 @@ public class BeanInfoTaglet extends AbstractInlineTaglet {
             type = getEnclosingTypeElement(context);
         }
 
-        var model =
-            new PropertyDescriptorsTableModel(getBeanInfo(asClass(type))
-                                              .getPropertyDescriptors());
+        var model = new PropertyDescriptorsTableModel(getBeanInfo(asClass(type)).getPropertyDescriptors());
 
         return div(attr("class", "summary"),
                    h3("Bean Property Summary"),

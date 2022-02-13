@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +48,11 @@ import static org.apache.tools.ant.MagicNames.ANTLIB_PREFIX;
  * {@link Task}s.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("ant.task")
 @ServiceProviderFor({ Taglet.class })
 @NoArgsConstructor @ToString
-public class AntTaskTaglet extends AbstractInlineTaglet
-                           implements SunToolsInternalToolkitTaglet {
+public class AntTaskTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {
     private static final AntTaskTaglet INSTANCE = new AntTaskTaglet();
 
     public static void register(Map<Object,Object> map) {
@@ -85,8 +81,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet
 
         if (! Task.class.isAssignableFrom(type)) {
             throw new IllegalArgumentException(type.getCanonicalName()
-                                               + " is not a subclass of "
-                                               + Task.class.getCanonicalName());
+                                               + " is not a subclass of " + Task.class.getCanonicalName());
         }
 
         String template =
@@ -104,10 +99,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet
             String pkg = type.getPackage().getName();
 
             while (pkg != null) {
-                URL url =
-                    type.getResource("/"
-                                     + String.join("/", pkg.split(Pattern.quote(".")))
-                                     + "/antlib.xml");
+                URL url = type.getResource("/" + String.join("/", pkg.split(Pattern.quote("."))) + "/antlib.xml");
 
                 if (url != null) {
                     try {
@@ -127,12 +119,10 @@ public class AntTaskTaglet extends AbstractInlineTaglet
                 }
             }
 
-            ComponentHelper helper =
-                ComponentHelper.getComponentHelper(project);
+            ComponentHelper helper = ComponentHelper.getComponentHelper(project);
 
             name =
-                helper.getTaskDefinitions().entrySet()
-                .stream()
+                helper.getTaskDefinitions().entrySet().stream()
                 .filter(t -> t.getValue().equals(type))
                 .map(t -> t.getKey())
                 .findFirst().orElse(null);
@@ -151,15 +141,12 @@ public class AntTaskTaglet extends AbstractInlineTaglet
         return type(0, new HashSet<>(), tag, new SimpleEntry<>(name, type));
     }
 
-    private FluentNode type(int depth, Set<Map.Entry<?,?>> set,
-                            Tag tag, Map.Entry<String,Class<?>> entry) {
-        IntrospectionHelper helper =
-            IntrospectionHelper.getHelper(entry.getValue());
+    private FluentNode type(int depth, Set<Map.Entry<?,?>> set, Tag tag, Map.Entry<String,Class<?>> entry) {
+        IntrospectionHelper helper = IntrospectionHelper.getHelper(entry.getValue());
         FluentNode node = element(entry.getKey());
 
         if (set.add(entry)
-            && (! entry.getValue().getName()
-                  .startsWith(Task.class.getPackage().getName()))) {
+            && (! entry.getValue().getName().startsWith(Task.class.getPackage().getName()))) {
             node
                 .add(attributes(tag, helper))
                 .add(content(depth + 1, set, tag, helper));
@@ -168,8 +155,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet
                 String content = "... text ...";
 
                 if (node.hasChildNodes()) {
-                    content =
-                        "\n" + repeat(INDENTATION, depth + 1) + content + "\n";
+                    content = "\n" + repeat(INDENTATION, depth + 1) + content + "\n";
                 }
 
                 node.add(text(content));
@@ -183,8 +169,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet
 
     private Node[] attributes(Tag tag, IntrospectionHelper helper) {
         Node[] array =
-            helper.getAttributeMap().entrySet()
-            .stream()
+            helper.getAttributeMap().entrySet().stream()
             .map(t -> attr(t.getKey(), t.getValue().getSimpleName()))
             .toArray(Node[]::new);
 
@@ -193,8 +178,7 @@ public class AntTaskTaglet extends AbstractInlineTaglet
 
     private FluentNode content(int depth, Set<Map.Entry<?,?>> set,
                                Tag tag, IntrospectionHelper helper) {
-        return fragment(helper.getNestedElementMap().entrySet()
-                        .stream()
+        return fragment(helper.getNestedElementMap().entrySet().stream()
                         .map(t -> type(depth, set, tag, t)));
     }
 }

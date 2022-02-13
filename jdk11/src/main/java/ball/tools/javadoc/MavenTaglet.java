@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +60,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * {@link.uri https://maven.apache.org/index.html Maven} artifacts.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @NoArgsConstructor(access = PROTECTED)
 public abstract class MavenTaglet extends AbstractInlineTaglet {
@@ -99,10 +96,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
      */
     protected File getPomFileFor(UnknownInlineTagTree tag, Element context) throws Exception {
         var name = defaultIfBlank(getText(tag).trim(), POM_XML);
-        var parent =
-            new File(trees.getPath(context).getCompilationUnit()
-                     .getSourceFile().toUri())
-            .getParentFile();
+        var parent = new File(trees.getPath(context).getCompilationUnit().getSourceFile().toUri()).getParentFile();
         var file = new File(parent, name);
 
         while (parent != null) {
@@ -154,9 +148,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
             switch (protocol) {
             case FILE:
-                var root =
-                    url.getPath()
-                    .replaceAll(Pattern.quote(getResourcePathOf(asClass(type))), EMPTY);
+                var root = url.getPath().replaceAll(Pattern.quote(getResourcePathOf(asClass(type))), EMPTY);
 
                 document =
                     DocumentBuilderFactory.newInstance()
@@ -183,21 +175,16 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
             var mojo =
                 (Node)
-                compile("/plugin/mojos/mojo[implementation='%s']",
-                        type.getQualifiedName())
+                compile("/plugin/mojos/mojo[implementation='%s']", type.getQualifiedName())
                 .evaluate(document, NODE);
 
             return div(attr("class", "summary"),
                        h3("Maven Plugin Parameter Summary"),
                        table(tag, context, asClass(type), mojo,
-                             asStream((NodeList)
-                                      compile("parameters/parameter")
-                                      .evaluate(mojo, NODESET))));
+                             asStream((NodeList) compile("parameters/parameter").evaluate(mojo, NODESET))));
         }
 
-        private FluentNode table(UnknownInlineTagTree tag, Element context,
-                                 Class<?> type,
-                                 Node mojo, Stream<Node> parameters) {
+        private FluentNode table(UnknownInlineTagTree tag, Element context, Class<?> type, Node mojo, Stream<Node> parameters) {
             return table(thead(tr(th(EMPTY), th("Field"),
                                   th("Default"), th("Property"),
                                   th("Required"), th("Editable"),
@@ -205,8 +192,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                          tbody(parameters.map(t -> tr(tag, context, type, mojo, t))));
         }
 
-        private FluentNode tr(UnknownInlineTagTree tag, Element context,
-                              Class<?> type, Node mojo, Node parameter) {
+        private FluentNode tr(UnknownInlineTagTree tag, Element context, Class<?> type, Node mojo, Node parameter) {
             var tr = fragment();
 
             try {
@@ -219,10 +205,8 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                                   ? type(tag, context, field.getDeclaringClass())
                                   : text(EMPTY)),
                            td(declaration(tag, context, field)),
-                           td(code(compile("configuration/%s/@default-value", name)
-                                   .evaluate(mojo))),
-                           td(code(compile("configuration/%s", name)
-                                   .evaluate(mojo))),
+                           td(code(compile("configuration/%s/@default-value", name).evaluate(mojo))),
+                           td(code(compile("configuration/%s", name).evaluate(mojo))),
                            td(code(compile("required").evaluate(parameter))),
                            td(code(compile("editable").evaluate(parameter))),
                            td(p(compile("description").evaluate(parameter))));
@@ -250,8 +234,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
         private static final String NAME = "plugin-help.xml";
         @CompileTimeCheck
         private static final Pattern PATTERN =
-            Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/"
-                            + Pattern.quote(NAME));
+            Pattern.compile("META-INF/maven/(?<g>[^/]+)/(?<a>[^/]+)/" + Pattern.quote(NAME));
 
         @Override
         public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
@@ -269,9 +252,7 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
 
             switch (protocol) {
             case FILE:
-                var root =
-                    Paths.get(url.getPath()
-                              .replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY));
+                var root = Paths.get(url.getPath().replaceAll(Pattern.quote(getResourcePathOf(type)), EMPTY));
                 var path =
                     Files.walk(root, Integer.MAX_VALUE)
                     .filter(Files::isRegularFile)
@@ -309,19 +290,15 @@ public abstract class MavenTaglet extends AbstractInlineTaglet {
                        h3(compile("/plugin/name").evaluate(document)),
                        p(compile("/plugin/description").evaluate(document)),
                        table(tag, context,
-                             asStream((NodeList)
-                                      compile("/plugin/mojos/mojo")
-                                      .evaluate(document, NODESET))));
+                             asStream((NodeList)compile("/plugin/mojos/mojo").evaluate(document, NODESET))));
         }
 
-        private FluentNode table(UnknownInlineTagTree tag, Element context,
-                                 Stream<Node> mojos) {
+        private FluentNode table(UnknownInlineTagTree tag, Element context, Stream<Node> mojos) {
             return table(thead(tr(th("Goal"), th("Phase"), th("Description"))),
                          tbody(mojos.map(t -> tr(tag, context, t))));
         }
 
-        private FluentNode tr(UnknownInlineTagTree tag, Element context,
-                              Node mojo) {
+        private FluentNode tr(UnknownInlineTagTree tag, Element context, Node mojo) {
             var tr = fragment();
 
             try {

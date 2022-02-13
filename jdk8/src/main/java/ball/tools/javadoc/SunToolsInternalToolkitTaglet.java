@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2008 - 2021 Allen D. Ball
+ * Copyright (C) 2008 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,22 +36,18 @@ import static lombok.AccessLevel.PROTECTED;
  * Default methods for legacy {@link Taglet} implementations.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 public interface SunToolsInternalToolkitTaglet extends Taglet {
     void set(Configuration configuration);
 
     @Override
-    default Content getTagletOutput(Doc doc,
-                                    TagletWriter writer) throws IllegalArgumentException {
+    default Content getTagletOutput(Doc doc, TagletWriter writer) throws IllegalArgumentException {
         throw new IllegalArgumentException(doc.position() + ": "
-                                           + "Method not supported in taglet "
-                                           + getName() + ".");
+                                           + "Method not supported in taglet " + getName() + ".");
     }
 
     @Override
-    default Content getTagletOutput(Tag tag,
-                                    TagletWriter writer) throws IllegalArgumentException {
+    default Content getTagletOutput(Tag tag, TagletWriter writer) throws IllegalArgumentException {
         set(writer.configuration());
 
         Content content = writer.getOutputInstance();

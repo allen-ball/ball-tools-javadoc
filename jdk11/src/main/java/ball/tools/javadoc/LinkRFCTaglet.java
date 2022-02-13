@@ -2,10 +2,8 @@ package ball.tools.javadoc;
 /*-
  * ##########################################################################
  * Utilities
- * $Id$
- * $HeadURL$
  * %%
- * Copyright (C) 2020, 2021 Allen D. Ball
+ * Copyright (C) 2020 - 2022 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +31,6 @@ import lombok.ToString;
  * Inline {@link Taglet} providing links to external RFCs.
  *
  * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}
- * @version $Revision$
  */
 @TagletName("link.rfc")
 @ServiceProviderFor({ Taglet.class })
@@ -48,8 +45,7 @@ public class LinkRFCTaglet extends AbstractInlineTaglet {
     public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {
         int rfc = Integer.valueOf(getText(tag).trim());
         var node =
-            a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null),
-              String.format(TEXT, rfc))
+            a(new URI(PROTOCOL, HOST, String.format(PATH, rfc), null), String.format(TEXT, rfc))
             .add(attr("target", "newtab"));
 
         return node;

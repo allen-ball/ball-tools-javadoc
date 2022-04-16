@@ -11,7 +11,7 @@ JDK8 and JDK11+ javadoc taglet implementations.  The respective artifacts are:
       <dependency>
         <groupId>ball</groupId>
         <artifactId>ball-tools-javadoc-jdk8</artifactId>
-        <version>3.1.1.20220227</version>
+        <version>3.1.1.20220314</version>
       </dependency>
 ```
 
@@ -21,7 +21,7 @@ and
       <dependency>
         <groupId>ball</groupId>
         <artifactId>ball-tools-javadoc</artifactId>
-        <version>3.1.1.20220227</version>
+        <version>3.1.1.20220314</version>
       </dependency>
 ```
 
@@ -48,8 +48,8 @@ The artifacts are published at:
 ```
 
 Javadoc is available at
-<https://allen-ball.github.io/javadoc/ball-tools-javadoc-jdk8/3.1.1.20220227/>
-and <https://allen-ball.github.io/javadoc/ball-tools-javadoc/3.1.1.20220227/>,
+<https://allen-ball.github.io/javadoc/ball-tools-javadoc-jdk8/3.1.1.20220314/>
+and <https://allen-ball.github.io/javadoc/ball-tools-javadoc/3.1.1.20220314/>,
 respectively.
 
 

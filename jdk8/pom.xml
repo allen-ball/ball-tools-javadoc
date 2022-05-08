@@ -34,15 +34,48 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <inceptionYear>2008</inceptionYear>
-  <properties>
-    <jse.target>8</jse.target>
-  </properties>
   <dependencies verbose="true">
     <dependency>
       <groupId>ball</groupId>
       <artifactId>ball-util</artifactId>
     </dependency>
   </dependencies>
+  <profiles>
+    <profile>
+      <id>JDK8_HOME</id>
+      <activation>
+        <property><name>env.JDK8_HOME</name></property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.8</version>
+          <scope>system</scope>
+          <systemPath>${env.JDK8_HOME}/lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-compile</id>
+                  <configuration>
+                    <executable>${env.JDK8_HOME}/bin/javac</executable>
+                    <fork>true</fork>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -58,6 +91,19 @@
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <source>8</source>
+              <target>8</target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

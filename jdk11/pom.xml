@@ -35,7 +35,7 @@
   </parent>
   <inceptionYear>2020</inceptionYear>
   <properties>
-    <jse.target>11</jse.target>
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
   <dependencies verbose="true">
     <dependency>

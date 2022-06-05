@@ -48,18 +48,14 @@
   </scm>
   <profiles>
     <profile>
-      <id>jdk8</id>
-      <activation><jdk>[1.8,9)</jdk></activation>
-      <modules>
-        <module>jdk8</module>
-      </modules>
-    </profile>
-    <profile>
       <id>jdk11</id>
-      <activation><jdk>[11,12)</jdk></activation>
+      <activation><jdk>[11,)</jdk></activation>
       <modules>
         <module>jdk11</module>
       </modules>
     </profile>
   </profiles>
+  <modules>
+    <module>jdk8</module>
+  </modules>
 </project>

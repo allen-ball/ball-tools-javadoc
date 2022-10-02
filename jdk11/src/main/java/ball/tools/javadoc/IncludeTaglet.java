@@ -23,6 +23,8 @@ import ball.swing.table.ListTableModel;
 import ball.swing.table.MapTableModel;
 import ball.xml.FluentNode;
 import com.sun.source.doctree.UnknownInlineTagTree;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
@@ -34,8 +36,9 @@ import javax.lang.model.element.VariableElement;
 import jdk.javadoc.doclet.Taglet;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.io.IOUtils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static javax.lang.model.util.ElementFilter.fieldsIn;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -95,8 +98,7 @@ public class IncludeTaglet extends AbstractInlineTaglet {
 
         if (value instanceof Collection<?>) {
             node =
-                table(tag, context,
-                      new ListTableModel(((Collection<?>) value).stream().collect(toList()), "Element"));
+                table(tag, context, new ListTableModel(((Collection<?>) value).stream().collect(toList()), "Element"));
         } else if (value instanceof Map<?,?>) {
             node = table(tag, context, new MapTableModel((Map<?,?>) value, "Key", "Value"));
         } else {
@@ -114,7 +116,9 @@ public class IncludeTaglet extends AbstractInlineTaglet {
         }
 
         try (var in = type.getResourceAsStream(name)) {
-            string = IOUtils.toString(in, "UTF-8");
+            string =
+                new BufferedReader(new InputStreamReader(in, UTF_8)).lines()
+                .collect(joining("\n"));
         }
 
         return pre(string);

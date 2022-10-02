@@ -26,15 +26,18 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.Taglet;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.io.IOUtils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -91,11 +94,7 @@ public class IncludeTaglet extends AbstractInlineTaglet implements SunToolsInter
         Object value = type.getDeclaredField(name).get(null);
 
         if (value instanceof Collection<?>) {
-            node =
-                table(tag,
-                      new ListTableModel(((Collection<?>) value).stream()
-                                         .collect(Collectors.toList()),
-                                         "Element"));
+            node = table(tag, new ListTableModel(((Collection<?>) value).stream().collect(toList()), "Element"));
         } else if (value instanceof Map<?,?>) {
             node = table(tag, new MapTableModel((Map<?,?>) value, "Key", "Value"));
         } else {
@@ -113,7 +112,9 @@ public class IncludeTaglet extends AbstractInlineTaglet implements SunToolsInter
         }
 
         try (InputStream in = type.getResourceAsStream(name)) {
-            string = IOUtils.toString(in, "UTF-8");
+            string =
+                new BufferedReader(new InputStreamReader(in, UTF_8)).lines()
+                .collect(joining("\n"));
         }
 
         return pre(string);

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">package ball.tools.javadoc;</a>
+<span class="sourceLineNo">002</span><a id="line.2">/*-</a>
+<span class="sourceLineNo">003</span><a id="line.3"> * ##########################################################################</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Utilities</a>
+<span class="sourceLineNo">005</span><a id="line.5"> * %%</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * Copyright (C) 2020 - 2022 Allen D. Ball</a>
+<span class="sourceLineNo">007</span><a id="line.7"> * %%</a>
+<span class="sourceLineNo">008</span><a id="line.8"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
+<span class="sourceLineNo">009</span><a id="line.9"> * you may not use this file except in compliance with the License.</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * You may obtain a copy of the License at</a>
+<span class="sourceLineNo">011</span><a id="line.11"> *</a>
+<span class="sourceLineNo">012</span><a id="line.12"> *      http://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">013</span><a id="line.13"> *</a>
+<span class="sourceLineNo">014</span><a id="line.14"> * Unless required by applicable law or agreed to in writing, software</a>
+<span class="sourceLineNo">015</span><a id="line.15"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
+<span class="sourceLineNo">016</span><a id="line.16"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
+<span class="sourceLineNo">017</span><a id="line.17"> * See the License for the specific language governing permissions and</a>
+<span class="sourceLineNo">018</span><a id="line.18"> * limitations under the License.</a>
+<span class="sourceLineNo">019</span><a id="line.19"> * ##########################################################################</a>
+<span class="sourceLineNo">020</span><a id="line.20"> */</a>
+<span class="sourceLineNo">021</span><a id="line.21">import ball.annotation.ServiceProviderFor;</a>
+<span class="sourceLineNo">022</span><a id="line.22">import ball.swing.table.ListTableModel;</a>
+<span class="sourceLineNo">023</span><a id="line.23">import ball.swing.table.MapTableModel;</a>
+<span class="sourceLineNo">024</span><a id="line.24">import ball.xml.FluentNode;</a>
+<span class="sourceLineNo">025</span><a id="line.25">import com.sun.source.doctree.UnknownInlineTagTree;</a>
+<span class="sourceLineNo">026</span><a id="line.26">import java.io.BufferedReader;</a>
+<span class="sourceLineNo">027</span><a id="line.27">import java.io.InputStreamReader;</a>
+<span class="sourceLineNo">028</span><a id="line.28">import java.lang.reflect.Field;</a>
+<span class="sourceLineNo">029</span><a id="line.29">import java.util.Collection;</a>
+<span class="sourceLineNo">030</span><a id="line.30">import java.util.Map;</a>
+<span class="sourceLineNo">031</span><a id="line.31">import java.util.regex.Pattern;</a>
+<span class="sourceLineNo">032</span><a id="line.32">import javax.lang.model.element.Element;</a>
+<span class="sourceLineNo">033</span><a id="line.33">import javax.lang.model.element.PackageElement;</a>
+<span class="sourceLineNo">034</span><a id="line.34">import javax.lang.model.element.TypeElement;</a>
+<span class="sourceLineNo">035</span><a id="line.35">import javax.lang.model.element.VariableElement;</a>
+<span class="sourceLineNo">036</span><a id="line.36">import jdk.javadoc.doclet.Taglet;</a>
+<span class="sourceLineNo">037</span><a id="line.37">import lombok.NoArgsConstructor;</a>
+<span class="sourceLineNo">038</span><a id="line.38">import lombok.ToString;</a>
+<span class="sourceLineNo">039</span><a id="line.39"></a>
+<span class="sourceLineNo">040</span><a id="line.40">import static java.nio.charset.StandardCharsets.UTF_8;</a>
+<span class="sourceLineNo">041</span><a id="line.41">import static java.util.stream.Collectors.joining;</a>
+<span class="sourceLineNo">042</span><a id="line.42">import static java.util.stream.Collectors.toList;</a>
+<span class="sourceLineNo">043</span><a id="line.43">import static javax.lang.model.util.ElementFilter.fieldsIn;</a>
+<span class="sourceLineNo">044</span><a id="line.44">import static org.apache.commons.lang3.StringUtils.isNotEmpty;</a>
+<span class="sourceLineNo">045</span><a id="line.45"></a>
+<span class="sourceLineNo">046</span><a id="line.46">/**</a>
+<span class="sourceLineNo">047</span><a id="line.47"> * Inline {@link Taglet} to include a static {@link Class}</a>
+<span class="sourceLineNo">048</span><a id="line.48"> * {@link java.lang.reflect.Field} or resource in the Javadoc output.</a>
+<span class="sourceLineNo">049</span><a id="line.49"> *</a>
+<span class="sourceLineNo">050</span><a id="line.50"> * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}</a>
+<span class="sourceLineNo">051</span><a id="line.51"> */</a>
+<span class="sourceLineNo">052</span><a id="line.52">@TagletName("include")</a>
+<span class="sourceLineNo">053</span><a id="line.53">@ServiceProviderFor({ Taglet.class })</a>
+<span class="sourceLineNo">054</span><a id="line.54">@NoArgsConstructor @ToString</a>
+<span class="sourceLineNo">055</span><a id="line.55">public class IncludeTaglet extends AbstractInlineTaglet {</a>
+<span class="sourceLineNo">056</span><a id="line.56">    @Override</a>
+<span class="sourceLineNo">057</span><a id="line.57">    public FluentNode toNode(UnknownInlineTagTree tag, Element context) throws Throwable {</a>
+<span class="sourceLineNo">058</span><a id="line.58">        FluentNode node = null;</a>
+<span class="sourceLineNo">059</span><a id="line.59">        var argv = getText(tag).trim().split("[\\p{Space}]+", 2);</a>
+<span class="sourceLineNo">060</span><a id="line.60"></a>
+<span class="sourceLineNo">061</span><a id="line.61">        if (isNotEmpty(argv[0])) {</a>
+<span class="sourceLineNo">062</span><a id="line.62">            var target = argv[0].trim().split(Pattern.quote("#"), 2);</a>
+<span class="sourceLineNo">063</span><a id="line.63"></a>
+<span class="sourceLineNo">064</span><a id="line.64">            if (target.length &gt; 1) {</a>
+<span class="sourceLineNo">065</span><a id="line.65">                var type =</a>
+<span class="sourceLineNo">066</span><a id="line.66">                    isNotEmpty(target[0])</a>
+<span class="sourceLineNo">067</span><a id="line.67">                        ? getTypeElementFor(context, target[0])</a>
+<span class="sourceLineNo">068</span><a id="line.68">                        : getEnclosingTypeElement(context);</a>
+<span class="sourceLineNo">069</span><a id="line.69">                var field =</a>
+<span class="sourceLineNo">070</span><a id="line.70">                    fieldsIn(type.getEnclosedElements()).stream()</a>
+<span class="sourceLineNo">071</span><a id="line.71">                    .filter(t -&gt; t.getSimpleName().contentEquals(target[1]))</a>
+<span class="sourceLineNo">072</span><a id="line.72">                    .findFirst().get();</a>
+<span class="sourceLineNo">073</span><a id="line.73"></a>
+<span class="sourceLineNo">074</span><a id="line.74">                node = field(tag, context, field);</a>
+<span class="sourceLineNo">075</span><a id="line.75">            } else {</a>
+<span class="sourceLineNo">076</span><a id="line.76">                var type =</a>
+<span class="sourceLineNo">077</span><a id="line.77">                    (context instanceof PackageElement)</a>
+<span class="sourceLineNo">078</span><a id="line.78">                        ? asPackageInfoClass((PackageElement) context)</a>
+<span class="sourceLineNo">079</span><a id="line.79">                        : asClass(getEnclosingTypeElement(context));</a>
+<span class="sourceLineNo">080</span><a id="line.80"></a>
+<span class="sourceLineNo">081</span><a id="line.81">                node = resource(tag, context, type, target[0]);</a>
+<span class="sourceLineNo">082</span><a id="line.82">            }</a>
+<span class="sourceLineNo">083</span><a id="line.83">        } else {</a>
+<span class="sourceLineNo">084</span><a id="line.84">            node = field(tag, context, (VariableElement) context);</a>
+<span class="sourceLineNo">085</span><a id="line.85">        }</a>
+<span class="sourceLineNo">086</span><a id="line.86"></a>
+<span class="sourceLineNo">087</span><a id="line.87">        return node;</a>
+<span class="sourceLineNo">088</span><a id="line.88">    }</a>
+<span class="sourceLineNo">089</span><a id="line.89"></a>
+<span class="sourceLineNo">090</span><a id="line.90">    private FluentNode field(UnknownInlineTagTree tag, Element context, VariableElement element) throws Exception {</a>
+<span class="sourceLineNo">091</span><a id="line.91">        FluentNode node = null;</a>
+<span class="sourceLineNo">092</span><a id="line.92">        var type = asClass((TypeElement) element.getEnclosingElement());</a>
+<span class="sourceLineNo">093</span><a id="line.93">        var field = type.getDeclaredField(element.getSimpleName().toString());</a>
+<span class="sourceLineNo">094</span><a id="line.94"></a>
+<span class="sourceLineNo">095</span><a id="line.95">        field.setAccessible(true);</a>
+<span class="sourceLineNo">096</span><a id="line.96"></a>
+<span class="sourceLineNo">097</span><a id="line.97">        var value = field.get(null);</a>
+<span class="sourceLineNo">098</span><a id="line.98"></a>
+<span class="sourceLineNo">099</span><a id="line.99">        if (value instanceof Collection&lt;?&gt;) {</a>
+<span class="sourceLineNo">100</span><a id="line.100">            node =</a>
+<span class="sourceLineNo">101</span><a id="line.101">                table(tag, context, new ListTableModel(((Collection&lt;?&gt;) value).stream().collect(toList()), "Element"));</a>
+<span class="sourceLineNo">102</span><a id="line.102">        } else if (value instanceof Map&lt;?,?&gt;) {</a>
+<span class="sourceLineNo">103</span><a id="line.103">            node = table(tag, context, new MapTableModel((Map&lt;?,?&gt;) value, "Key", "Value"));</a>
+<span class="sourceLineNo">104</span><a id="line.104">        } else {</a>
+<span class="sourceLineNo">105</span><a id="line.105">            node = pre(String.valueOf(value));</a>
+<span class="sourceLineNo">106</span><a id="line.106">        }</a>
+<span class="sourceLineNo">107</span><a id="line.107"></a>
+<span class="sourceLineNo">108</span><a id="line.108">        return div(attr("class", "block"), node);</a>
+<span class="sourceLineNo">109</span><a id="line.109">    }</a>
+<span class="sourceLineNo">110</span><a id="line.110"></a>
+<span class="sourceLineNo">111</span><a id="line.111">    private FluentNode resource(UnknownInlineTagTree tag, Element context, Class&lt;?&gt; type, String name) throws Exception {</a>
+<span class="sourceLineNo">112</span><a id="line.112">        String string = null;</a>
+<span class="sourceLineNo">113</span><a id="line.113"></a>
+<span class="sourceLineNo">114</span><a id="line.114">        if (type == null) {</a>
+<span class="sourceLineNo">115</span><a id="line.115">            type = getClass();</a>
+<span class="sourceLineNo">116</span><a id="line.116">        }</a>
+<span class="sourceLineNo">117</span><a id="line.117"></a>
+<span class="sourceLineNo">118</span><a id="line.118">        try (var in = type.getResourceAsStream(name)) {</a>
+<span class="sourceLineNo">119</span><a id="line.119">            string =</a>
+<span class="sourceLineNo">120</span><a id="line.120">                new BufferedReader(new InputStreamReader(in, UTF_8)).lines()</a>
+<span class="sourceLineNo">121</span><a id="line.121">                .collect(joining("\n"));</a>
+<span class="sourceLineNo">122</span><a id="line.122">        }</a>
+<span class="sourceLineNo">123</span><a id="line.123"></a>
+<span class="sourceLineNo">124</span><a id="line.124">        return pre(string);</a>
+<span class="sourceLineNo">125</span><a id="line.125">    }</a>
+<span class="sourceLineNo">126</span><a id="line.126">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>

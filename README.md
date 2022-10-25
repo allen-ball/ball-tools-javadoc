@@ -9,9 +9,9 @@ JDK8 and JDK11+ javadoc taglet implementations.  The respective artifacts are:
 
 ```xml
       <dependency>
-        <groupId>ball</groupId>
+        <groupId>dev.hcf.ball</groupId>
         <artifactId>ball-tools-javadoc-jdk8</artifactId>
-        <version>3.1.2-SNAPSHOT</version>
+        <version>3.1.4.20221024</version>
       </dependency>
 ```
 
@@ -19,37 +19,18 @@ and
 
 ```xml
       <dependency>
-        <groupId>ball</groupId>
+        <groupId>dev.hcf.ball</groupId>
         <artifactId>ball-tools-javadoc</artifactId>
-        <version>3.1.2-SNAPSHOT</version>
+        <version>3.1.4.20221024</version>
       </dependency>
 ```
 
-The artifacts are published at:
-
-```xml
-  <repositories>
-    ...
-    <repository>
-      <id>repo.hcf.dev-RELEASE</id>
-      <name>hcf.dev RELEASE Repository</name>
-      <url>https://repo.hcf.dev/maven/release/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    ...
-  </repositories>
-```
+The artifacts are published on
+[Maven Central](https://search.maven.org/search?q=ball-tools-javadoc).
 
 Javadoc is available at
-<https://allen-ball.github.io/javadoc/ball-tools-javadoc-jdk8/3.1.1.20220314/>
-and <https://allen-ball.github.io/javadoc/ball-tools-javadoc/3.1.1.20220314/>,
+<https://allen-ball.github.io/ball-tools-javadoc/ball-tools-javadoc-jdk8/>
+and <https://allen-ball.github.io/ball-tools-javadoc/ball-tools-javadoc/>,
 respectively.
 
 

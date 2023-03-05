@@ -3,7 +3,7 @@ package ball.tools.javadoc;
  * ##########################################################################
  * Utilities
  * %%
- * Copyright (C) 2008 - 2022 Allen D. Ball
+ * Copyright (C) 2008 - 2023 Allen D. Ball
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,10 @@ public class InjectedFieldsTaglet extends AbstractInlineTaglet implements SunToo
     }
 
     private static final String[] NAMES = new String[] {
-        javax.annotation.Resource.class.getName(),
-        javax.annotation.Resources.class.getName(),
+        "jakarta.annotation.Resource",
+        "jakarta.annotation.Resources",
+        "javax.annotation.Resource",
+        "javax.annotation.Resources",
         "javax.inject.Inject",
         "javax.inject.Named",
         "org.springframework.beans.factory.annotation.Autowired",

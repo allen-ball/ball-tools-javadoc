@@ -11,7 +11,7 @@ JDK8 and JDK11+ javadoc taglet implementations.  The respective artifacts are:
       <dependency>
         <groupId>dev.hcf.ball</groupId>
         <artifactId>ball-tools-javadoc-jdk8</artifactId>
-        <version>3.1.10.20230424</version>
+        <version>3.1.11.20230520</version>
       </dependency>
 ```
 
@@ -21,7 +21,7 @@ and
       <dependency>
         <groupId>dev.hcf.ball</groupId>
         <artifactId>ball-tools-javadoc</artifactId>
-        <version>3.1.10.20230424</version>
+        <version>3.1.11.20230520</version>
       </dependency>
 ```
 

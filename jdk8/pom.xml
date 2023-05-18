@@ -30,7 +30,7 @@
   <parent>
     <groupId>dev.hcf.ball</groupId>
     <artifactId>ball-tools-javadoc-parent</artifactId>
-    <version>3.1.10.20230424</version>
+    <version>3.1.11.20230520</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <inceptionYear>2008</inceptionYear>

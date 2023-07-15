@@ -34,12 +34,6 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <inceptionYear>2008</inceptionYear>
-  <dependencies verbose="true">
-    <dependency>
-      <groupId>dev.hcf.ball</groupId>
-      <artifactId>ball-util</artifactId>
-    </dependency>
-  </dependencies>
   <profiles>
     <profile>
       <id>JDK8_HOME</id>
@@ -76,6 +70,12 @@
       </build>
     </profile>
   </profiles>
+  <dependencies verbose="true">
+    <dependency>
+      <groupId>dev.hcf.ball</groupId>
+      <artifactId>ball-util</artifactId>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
@@ -91,6 +91,25 @@
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-bytecode-version</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <enforceBytecodeVersion>
+                  <maxJdkVersion>8</maxJdkVersion>
+                </enforceBytecodeVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

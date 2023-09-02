@@ -29,7 +29,7 @@
   <parent>
     <groupId>dev.hcf.ball</groupId>
     <artifactId>ball-tools-javadoc-gh-pages-parent</artifactId>
-    <version>3.1.13.20230720</version>
+    <version>3.1.14.20230902</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <properties>

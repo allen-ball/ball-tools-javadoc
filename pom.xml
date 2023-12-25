@@ -24,14 +24,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.hcf.ball</groupId>
   <artifactId>ball-tools-javadoc-gh-pages-parent</artifactId>
-  <version>3.1.14.20230902</version>
+  <version>3.1.15.20231224</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <url>https://github.com/allen-ball/ball-tools-javadoc</url>
   <parent>
     <groupId>dev.hcf.ball</groupId>
     <artifactId>javadoc-parent</artifactId>
-    <version>2023.1.6</version>
+    <version>2023.1.7</version>
     <relativePath>../ball/javadoc-parent/pom.xml</relativePath>
   </parent>
   <organization>

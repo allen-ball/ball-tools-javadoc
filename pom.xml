@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>dev.hcf.ball</groupId>
   <artifactId>ball-tools-javadoc-parent</artifactId>
-  <version>3.1.19.20250124</version>
+  <version>3.1.20.20250608</version>
   <packaging>pom</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Javadoc Doclets and Taglets POM</description>
@@ -32,7 +32,7 @@
   <parent>
     <groupId>dev.hcf.ball</groupId>
     <artifactId>parent</artifactId>
-    <version>2025.0.0</version>
+    <version>2025.0.1</version>
     <relativePath>../ball/parent/pom.xml</relativePath>
   </parent>
   <inceptionYear>2020</inceptionYear>

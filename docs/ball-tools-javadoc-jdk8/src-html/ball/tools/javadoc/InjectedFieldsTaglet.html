@@ -1,147 +1,146 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang>
 <head>
 <title>Source code</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
-<main role="main">
 <div class="sourceContainer">
-<pre><span class="sourceLineNo">001</span><a id="line.1">package ball.tools.javadoc;</a>
-<span class="sourceLineNo">002</span><a id="line.2">/*-</a>
-<span class="sourceLineNo">003</span><a id="line.3"> * ##########################################################################</a>
-<span class="sourceLineNo">004</span><a id="line.4"> * Utilities</a>
-<span class="sourceLineNo">005</span><a id="line.5"> * %%</a>
-<span class="sourceLineNo">006</span><a id="line.6"> * Copyright (C) 2008 - 2023 Allen D. Ball</a>
-<span class="sourceLineNo">007</span><a id="line.7"> * %%</a>
-<span class="sourceLineNo">008</span><a id="line.8"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
-<span class="sourceLineNo">009</span><a id="line.9"> * you may not use this file except in compliance with the License.</a>
-<span class="sourceLineNo">010</span><a id="line.10"> * You may obtain a copy of the License at</a>
-<span class="sourceLineNo">011</span><a id="line.11"> *</a>
-<span class="sourceLineNo">012</span><a id="line.12"> *      http://www.apache.org/licenses/LICENSE-2.0</a>
-<span class="sourceLineNo">013</span><a id="line.13"> *</a>
-<span class="sourceLineNo">014</span><a id="line.14"> * Unless required by applicable law or agreed to in writing, software</a>
-<span class="sourceLineNo">015</span><a id="line.15"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
-<span class="sourceLineNo">016</span><a id="line.16"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
-<span class="sourceLineNo">017</span><a id="line.17"> * See the License for the specific language governing permissions and</a>
-<span class="sourceLineNo">018</span><a id="line.18"> * limitations under the License.</a>
-<span class="sourceLineNo">019</span><a id="line.19"> * ##########################################################################</a>
-<span class="sourceLineNo">020</span><a id="line.20"> */</a>
-<span class="sourceLineNo">021</span><a id="line.21">import ball.annotation.ServiceProviderFor;</a>
-<span class="sourceLineNo">022</span><a id="line.22">import ball.xml.FluentNode;</a>
-<span class="sourceLineNo">023</span><a id="line.23">import com.sun.javadoc.ClassDoc;</a>
-<span class="sourceLineNo">024</span><a id="line.24">import com.sun.javadoc.Tag;</a>
-<span class="sourceLineNo">025</span><a id="line.25">import com.sun.tools.doclets.Taglet;</a>
-<span class="sourceLineNo">026</span><a id="line.26">import java.lang.annotation.Annotation;</a>
-<span class="sourceLineNo">027</span><a id="line.27">import java.lang.annotation.Retention;</a>
-<span class="sourceLineNo">028</span><a id="line.28">import java.lang.reflect.Field;</a>
-<span class="sourceLineNo">029</span><a id="line.29">import java.util.HashSet;</a>
-<span class="sourceLineNo">030</span><a id="line.30">import java.util.Map;</a>
-<span class="sourceLineNo">031</span><a id="line.31">import java.util.Set;</a>
-<span class="sourceLineNo">032</span><a id="line.32">import java.util.stream.Stream;</a>
-<span class="sourceLineNo">033</span><a id="line.33">import lombok.NoArgsConstructor;</a>
-<span class="sourceLineNo">034</span><a id="line.34">import lombok.ToString;</a>
-<span class="sourceLineNo">035</span><a id="line.35"></a>
-<span class="sourceLineNo">036</span><a id="line.36">import static org.apache.commons.lang3.StringUtils.isNotEmpty;</a>
-<span class="sourceLineNo">037</span><a id="line.37"></a>
-<span class="sourceLineNo">038</span><a id="line.38">/**</a>
-<span class="sourceLineNo">039</span><a id="line.39"> * Inline {@link Taglet} to provide a report of members whose values are</a>
-<span class="sourceLineNo">040</span><a id="line.40"> * injected.</a>
-<span class="sourceLineNo">041</span><a id="line.41"> *</a>
-<span class="sourceLineNo">042</span><a id="line.42"> * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}</a>
-<span class="sourceLineNo">043</span><a id="line.43"> */</a>
-<span class="sourceLineNo">044</span><a id="line.44">@TagletName("injected.fields")</a>
-<span class="sourceLineNo">045</span><a id="line.45">@ServiceProviderFor({ Taglet.class })</a>
-<span class="sourceLineNo">046</span><a id="line.46">@NoArgsConstructor @ToString</a>
-<span class="sourceLineNo">047</span><a id="line.47">public class InjectedFieldsTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {</a>
-<span class="sourceLineNo">048</span><a id="line.48">    private static final InjectedFieldsTaglet INSTANCE = new InjectedFieldsTaglet();</a>
-<span class="sourceLineNo">049</span><a id="line.49"></a>
-<span class="sourceLineNo">050</span><a id="line.50">    public static void register(Map&lt;Object,Object&gt; map) {</a>
-<span class="sourceLineNo">051</span><a id="line.51">        register(map, INSTANCE);</a>
-<span class="sourceLineNo">052</span><a id="line.52">    }</a>
-<span class="sourceLineNo">053</span><a id="line.53"></a>
-<span class="sourceLineNo">054</span><a id="line.54">    private static final String[] NAMES = new String[] {</a>
-<span class="sourceLineNo">055</span><a id="line.55">        "jakarta.annotation.Resource",</a>
-<span class="sourceLineNo">056</span><a id="line.56">        "jakarta.annotation.Resources",</a>
-<span class="sourceLineNo">057</span><a id="line.57">        "javax.annotation.Resource",</a>
-<span class="sourceLineNo">058</span><a id="line.58">        "javax.annotation.Resources",</a>
-<span class="sourceLineNo">059</span><a id="line.59">        "javax.inject.Inject",</a>
-<span class="sourceLineNo">060</span><a id="line.60">        "javax.inject.Named",</a>
-<span class="sourceLineNo">061</span><a id="line.61">        "org.springframework.beans.factory.annotation.Autowired",</a>
-<span class="sourceLineNo">062</span><a id="line.62">        "org.springframework.beans.factory.annotation.Value",</a>
-<span class="sourceLineNo">063</span><a id="line.63">        "org.springframework.boot.web.server.LocalServerPort"</a>
-<span class="sourceLineNo">064</span><a id="line.64">    };</a>
-<span class="sourceLineNo">065</span><a id="line.65"></a>
-<span class="sourceLineNo">066</span><a id="line.66">    @Override</a>
-<span class="sourceLineNo">067</span><a id="line.67">    public FluentNode toNode(Tag tag) throws Throwable {</a>
-<span class="sourceLineNo">068</span><a id="line.68">        ClassDoc doc = null;</a>
-<span class="sourceLineNo">069</span><a id="line.69">        String[] argv = tag.text().trim().split("[\\p{Space}]+", 2);</a>
-<span class="sourceLineNo">070</span><a id="line.70"></a>
-<span class="sourceLineNo">071</span><a id="line.71">        if (isNotEmpty(argv[0])) {</a>
-<span class="sourceLineNo">072</span><a id="line.72">            doc = getClassDocFor(tag, argv[0]);</a>
-<span class="sourceLineNo">073</span><a id="line.73">        } else {</a>
-<span class="sourceLineNo">074</span><a id="line.74">            doc = containingClass(tag);</a>
-<span class="sourceLineNo">075</span><a id="line.75">        }</a>
-<span class="sourceLineNo">076</span><a id="line.76"></a>
-<span class="sourceLineNo">077</span><a id="line.77">        Set&lt;Class&lt;? extends Annotation&gt;&gt; set = new HashSet&lt;&gt;();</a>
-<span class="sourceLineNo">078</span><a id="line.78"></a>
-<span class="sourceLineNo">079</span><a id="line.79">        for (String name : NAMES) {</a>
-<span class="sourceLineNo">080</span><a id="line.80">            Class&lt;? extends Annotation&gt; annotation = null;</a>
-<span class="sourceLineNo">081</span><a id="line.81"></a>
-<span class="sourceLineNo">082</span><a id="line.82">            try {</a>
-<span class="sourceLineNo">083</span><a id="line.83">                annotation = Class.forName(name, false, getClassLoader()).asSubclass(Annotation.class);</a>
-<span class="sourceLineNo">084</span><a id="line.84">            } catch (Exception exception) {</a>
-<span class="sourceLineNo">085</span><a id="line.85">            }</a>
-<span class="sourceLineNo">086</span><a id="line.86"></a>
-<span class="sourceLineNo">087</span><a id="line.87">            if (annotation != null) {</a>
-<span class="sourceLineNo">088</span><a id="line.88">                Retention retention = annotation.getAnnotation(Retention.class);</a>
-<span class="sourceLineNo">089</span><a id="line.89"></a>
-<span class="sourceLineNo">090</span><a id="line.90">                if (retention == null) {</a>
-<span class="sourceLineNo">091</span><a id="line.91">                    throw new IllegalStateException(annotation.getCanonicalName()</a>
-<span class="sourceLineNo">092</span><a id="line.92">                                                    + " does not specify a retention policy");</a>
-<span class="sourceLineNo">093</span><a id="line.93">                }</a>
-<span class="sourceLineNo">094</span><a id="line.94"></a>
-<span class="sourceLineNo">095</span><a id="line.95">                switch (retention.value()) {</a>
-<span class="sourceLineNo">096</span><a id="line.96">                case RUNTIME:</a>
-<span class="sourceLineNo">097</span><a id="line.97">                    break;</a>
-<span class="sourceLineNo">098</span><a id="line.98"></a>
-<span class="sourceLineNo">099</span><a id="line.99">                case CLASS:</a>
-<span class="sourceLineNo">100</span><a id="line.100">                case SOURCE:</a>
-<span class="sourceLineNo">101</span><a id="line.101">                default:</a>
-<span class="sourceLineNo">102</span><a id="line.102">                    throw new IllegalStateException(annotation.getCanonicalName()</a>
-<span class="sourceLineNo">103</span><a id="line.103">                                                    + " specifies " + retention.value() + " retention policy");</a>
-<span class="sourceLineNo">104</span><a id="line.104">                    /* break; */</a>
-<span class="sourceLineNo">105</span><a id="line.105">                }</a>
-<span class="sourceLineNo">106</span><a id="line.106"></a>
-<span class="sourceLineNo">107</span><a id="line.107">                set.add(annotation);</a>
-<span class="sourceLineNo">108</span><a id="line.108">            }</a>
-<span class="sourceLineNo">109</span><a id="line.109">        }</a>
-<span class="sourceLineNo">110</span><a id="line.110"></a>
-<span class="sourceLineNo">111</span><a id="line.111">        if (set.isEmpty()) {</a>
-<span class="sourceLineNo">112</span><a id="line.112">            throw new IllegalStateException("No annotations to map");</a>
-<span class="sourceLineNo">113</span><a id="line.113">        }</a>
-<span class="sourceLineNo">114</span><a id="line.114"></a>
-<span class="sourceLineNo">115</span><a id="line.115">        return div(attr("class", "summary"),</a>
-<span class="sourceLineNo">116</span><a id="line.116">                   h3("Injected Field Summary"),</a>
-<span class="sourceLineNo">117</span><a id="line.117">                   table(tag, getClassFor(doc), set));</a>
-<span class="sourceLineNo">118</span><a id="line.118">    }</a>
-<span class="sourceLineNo">119</span><a id="line.119"></a>
-<span class="sourceLineNo">120</span><a id="line.120">    private FluentNode table(Tag tag, Class&lt;?&gt; type, Set&lt;Class&lt;? extends Annotation&gt;&gt; set) {</a>
-<span class="sourceLineNo">121</span><a id="line.121">        return table(thead(tr(th("Annotation(s)"), th("Field"))),</a>
-<span class="sourceLineNo">122</span><a id="line.122">                     tbody(Stream.of(type.getDeclaredFields())</a>
-<span class="sourceLineNo">123</span><a id="line.123">                           .filter(t -&gt; (Stream.of(t.getAnnotations())</a>
-<span class="sourceLineNo">124</span><a id="line.124">                                         .filter(a -&gt; set.contains(a.annotationType()))</a>
-<span class="sourceLineNo">125</span><a id="line.125">                                         .findFirst().isPresent()))</a>
-<span class="sourceLineNo">126</span><a id="line.126">                           .map(t -&gt; tr(tag, t, set))));</a>
-<span class="sourceLineNo">127</span><a id="line.127">    }</a>
-<span class="sourceLineNo">128</span><a id="line.128"></a>
-<span class="sourceLineNo">129</span><a id="line.129">    private FluentNode tr(Tag tag, Field field, Set&lt;Class&lt;? extends Annotation&gt;&gt; set) {</a>
-<span class="sourceLineNo">130</span><a id="line.130">        return tr(td(fragment(Stream.of(field.getAnnotations())</a>
-<span class="sourceLineNo">131</span><a id="line.131">                              .filter(t -&gt; set.contains(t.annotationType()))</a>
-<span class="sourceLineNo">132</span><a id="line.132">                              .map(t -&gt; annotation(tag, t)))),</a>
-<span class="sourceLineNo">133</span><a id="line.133">                  td(declaration(tag, field)));</a>
-<span class="sourceLineNo">134</span><a id="line.134">    }</a>
-<span class="sourceLineNo">135</span><a id="line.135">}</a>
+<pre><span class="sourceLineNo">001</span>package ball.tools.javadoc;<a name="line.1"></a>
+<span class="sourceLineNo">002</span>/*-<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * ##########################################################################<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * Utilities<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * %%<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * Copyright (C) 2008 - 2023 Allen D. Ball<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * %%<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * Licensed under the Apache License, Version 2.0 (the "License");<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * you may not use this file except in compliance with the License.<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * You may obtain a copy of the License at<a name="line.10"></a>
+<span class="sourceLineNo">011</span> *<a name="line.11"></a>
+<span class="sourceLineNo">012</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.12"></a>
+<span class="sourceLineNo">013</span> *<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * Unless required by applicable law or agreed to in writing, software<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * See the License for the specific language governing permissions and<a name="line.17"></a>
+<span class="sourceLineNo">018</span> * limitations under the License.<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * ##########################################################################<a name="line.19"></a>
+<span class="sourceLineNo">020</span> */<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import ball.annotation.ServiceProviderFor;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import ball.xml.FluentNode;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import com.sun.javadoc.ClassDoc;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import com.sun.javadoc.Tag;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import com.sun.tools.doclets.Taglet;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.lang.annotation.Annotation;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.lang.annotation.Retention;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.lang.reflect.Field;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import java.util.HashSet;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import java.util.Map;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import java.util.Set;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.stream.Stream;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import lombok.NoArgsConstructor;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import lombok.ToString;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static org.apache.commons.lang3.StringUtils.isNotEmpty;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>/**<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * Inline {@link Taglet} to provide a report of members whose values are<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * injected.<a name="line.40"></a>
+<span class="sourceLineNo">041</span> *<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * @author {@link.uri mailto:ball@hcf.dev Allen D. Ball}<a name="line.42"></a>
+<span class="sourceLineNo">043</span> */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>@TagletName("injected.fields")<a name="line.44"></a>
+<span class="sourceLineNo">045</span>@ServiceProviderFor({ Taglet.class })<a name="line.45"></a>
+<span class="sourceLineNo">046</span>@NoArgsConstructor @ToString<a name="line.46"></a>
+<span class="sourceLineNo">047</span>public class InjectedFieldsTaglet extends AbstractInlineTaglet implements SunToolsInternalToolkitTaglet {<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    private static final InjectedFieldsTaglet INSTANCE = new InjectedFieldsTaglet();<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>    public static void register(Map&lt;Object,Object&gt; map) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        register(map, INSTANCE);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    }<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    private static final String[] NAMES = new String[] {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        "jakarta.annotation.Resource",<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        "jakarta.annotation.Resources",<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        "javax.annotation.Resource",<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        "javax.annotation.Resources",<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        "javax.inject.Inject",<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        "javax.inject.Named",<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        "org.springframework.beans.factory.annotation.Autowired",<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        "org.springframework.beans.factory.annotation.Value",<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        "org.springframework.boot.web.server.LocalServerPort"<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    };<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>    @Override<a name="line.66"></a>
+<span class="sourceLineNo">067</span>    public FluentNode toNode(Tag tag) throws Throwable {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        ClassDoc doc = null;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        String[] argv = tag.text().trim().split("[\\p{Space}]+", 2);<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        if (isNotEmpty(argv[0])) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>            doc = getClassDocFor(tag, argv[0]);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        } else {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>            doc = containingClass(tag);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        Set&lt;Class&lt;? extends Annotation&gt;&gt; set = new HashSet&lt;&gt;();<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        for (String name : NAMES) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>            Class&lt;? extends Annotation&gt; annotation = null;<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>            try {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                annotation = Class.forName(name, false, getClassLoader()).asSubclass(Annotation.class);<a name="line.83"></a>
+<span class="sourceLineNo">084</span>            } catch (Exception exception) {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>            }<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>            if (annotation != null) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                Retention retention = annotation.getAnnotation(Retention.class);<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                if (retention == null) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                    throw new IllegalStateException(annotation.getCanonicalName()<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                                    + " does not specify a retention policy");<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                switch (retention.value()) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                case RUNTIME:<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                    break;<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                case CLASS:<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                case SOURCE:<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                default:<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                    throw new IllegalStateException(annotation.getCanonicalName()<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                                    + " specifies " + retention.value() + " retention policy");<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                    /* break; */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>                set.add(annotation);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>            }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>        if (set.isEmpty()) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>            throw new IllegalStateException("No annotations to map");<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        return div(attr("class", "summary"),<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                   h3("Injected Field Summary"),<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                   table(tag, getClassFor(doc), set));<a name="line.117"></a>
+<span class="sourceLineNo">118</span>    }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>    private FluentNode table(Tag tag, Class&lt;?&gt; type, Set&lt;Class&lt;? extends Annotation&gt;&gt; set) {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        return table(thead(tr(th("Annotation(s)"), th("Field"))),<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                     tbody(Stream.of(type.getDeclaredFields())<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                           .filter(t -&gt; (Stream.of(t.getAnnotations())<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                         .filter(a -&gt; set.contains(a.annotationType()))<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                         .findFirst().isPresent()))<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                           .map(t -&gt; tr(tag, t, set))));<a name="line.126"></a>
+<span class="sourceLineNo">127</span>    }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>    private FluentNode tr(Tag tag, Field field, Set&lt;Class&lt;? extends Annotation&gt;&gt; set) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        return tr(td(fragment(Stream.of(field.getAnnotations())<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                              .filter(t -&gt; set.contains(t.annotationType()))<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                              .map(t -&gt; annotation(tag, t)))),<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                  td(declaration(tag, field)));<a name="line.133"></a>
+<span class="sourceLineNo">134</span>    }<a name="line.134"></a>
+<span class="sourceLineNo">135</span>}<a name="line.135"></a>
 
 
 
@@ -204,6 +203,5 @@
 
 </pre>
 </div>
-</main>
 </body>
 </html>

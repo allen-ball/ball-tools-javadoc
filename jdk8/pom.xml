@@ -29,7 +29,7 @@
   <parent>
     <groupId>dev.hcf.ball</groupId>
     <artifactId>ball-tools-javadoc-gh-pages-parent</artifactId>
-    <version>3.1.21.20251111</version>
+    <version>3.1.22.20261115</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <properties>
@@ -53,6 +53,24 @@
         <configuration>
           <includeDependencySources>true</includeDependencySources>
           <dependencySourceIncludes>${javadoc.groupId}:${javadoc.artifactId}</dependencySourceIncludes>
+          <jdkToolchain>
+            <version>1.8</version>
+          </jdkToolchain>
+          <additionalOptions combine.self="override"/>
+          <docletArtifacts combine.self="override">
+            <docletArtifact>
+              <groupId>${javadoc.groupId}</groupId>
+              <artifactId>${javadoc.artifactId}</artifactId>
+              <version>${javadoc.version}</version>
+            </docletArtifact>
+          </docletArtifacts>
+          <tagletArtifacts combine.self="override">
+            <tagletArtifact>
+              <groupId>${javadoc.groupId}</groupId>
+              <artifactId>${javadoc.artifactId}</artifactId>
+              <version>${javadoc.version}</version>
+            </tagletArtifact>
+          </tagletArtifacts>
           <doctitle>API Documentation</doctitle>
           <groups>
             <group>
